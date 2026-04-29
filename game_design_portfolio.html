@@ -1,0 +1,543 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Game Design Portfolio</title>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700&family=Crimson+Pro:ital,wght@0,300;0,400;1,300&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0a0f;
+    --surface: #111118;
+    --surface2: #1a1a24;
+    --border: #2a2a3a;
+    --accent: #c8a96e;
+    --accent2: #7c6fbf;
+    --text: #d4cfcf;
+    --muted: #6b6880;
+    --glow: rgba(200, 169, 110, 0.15);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Crimson Pro', Georgia, serif;
+    font-size: 17px;
+    line-height: 1.7;
+    min-height: 100vh;
+  }
+
+  /* Noise texture overlay */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 999;
+    opacity: 0.4;
+  }
+
+  /* NAV */
+  nav {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background: rgba(10,10,15,0.92);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border);
+    padding: 0 2rem;
+    display: flex;
+    gap: 0;
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+  nav::-webkit-scrollbar { display: none; }
+
+  .nav-tab {
+    font-family: 'Space Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--muted);
+    padding: 1rem 1.2rem;
+    cursor: pointer;
+    border: none;
+    background: none;
+    border-bottom: 2px solid transparent;
+    transition: color 0.2s, border-color 0.2s;
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+  .nav-tab:hover { color: var(--text); }
+  .nav-tab.active {
+    color: var(--accent);
+    border-bottom-color: var(--accent);
+  }
+
+  /* PAGES */
+  .page { display: none; animation: fadeIn 0.35s ease; }
+  .page.active { display: block; }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* HOME PAGE */
+  .hero {
+    min-height: 70vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 5rem 2rem 3rem;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .hero::before {
+    content: '';
+    position: absolute;
+    top: -20%;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 600px;
+    height: 600px;
+    background: radial-gradient(ellipse, rgba(124,111,191,0.12) 0%, transparent 70%);
+    pointer-events: none;
+  }
+
+  .hero-eyebrow {
+    font-family: 'Space Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 1.5rem;
+    opacity: 0;
+    animation: fadeIn 0.5s 0.1s forwards;
+  }
+
+  .hero-title {
+    font-family: 'Cinzel Decorative', serif;
+    font-size: clamp(2rem, 6vw, 4rem);
+    font-weight: 700;
+    line-height: 1.15;
+    color: #fff;
+    margin-bottom: 1rem;
+    opacity: 0;
+    animation: fadeIn 0.5s 0.2s forwards;
+  }
+
+  .hero-title span {
+    color: var(--accent);
+  }
+
+  .hero-subtitle {
+    font-family: 'Crimson Pro', serif;
+    font-style: italic;
+    font-size: 1.2rem;
+    color: var(--muted);
+    margin-bottom: 3rem;
+    opacity: 0;
+    animation: fadeIn 0.5s 0.3s forwards;
+  }
+
+  .divider {
+    width: 80px;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--accent), transparent);
+    margin: 2rem auto;
+  }
+
+  /* EXEC SUMMARY */
+  .exec-summary {
+    max-width: 780px;
+    margin: 0 auto;
+    padding: 3rem 2rem 5rem;
+    opacity: 0;
+    animation: fadeIn 0.5s 0.4s forwards;
+  }
+
+  .exec-summary h2 {
+    font-family: 'Space Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--accent2);
+    margin-bottom: 1.2rem;
+  }
+
+  .exec-summary p {
+    color: var(--text);
+    font-size: 1.1rem;
+    font-weight: 300;
+    line-height: 1.8;
+    margin-bottom: 1rem;
+  }
+
+  /* PROJECT PAGES */
+  .project-page {
+    max-width: 860px;
+    margin: 0 auto;
+    padding: 4rem 2rem;
+  }
+
+  .project-header {
+    margin-bottom: 3rem;
+    padding-bottom: 2rem;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .project-number {
+    font-family: 'Space Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.2em;
+    color: var(--accent);
+    margin-bottom: 0.75rem;
+  }
+
+  .project-title {
+    font-family: 'Cinzel Decorative', serif;
+    font-size: clamp(1.4rem, 3vw, 2.2rem);
+    color: #fff;
+    line-height: 1.2;
+    margin-bottom: 0.75rem;
+  }
+
+  .project-tagline {
+    font-style: italic;
+    color: var(--muted);
+    font-size: 1.05rem;
+  }
+
+  .project-body {
+    display: grid;
+    grid-template-columns: 1fr 280px;
+    gap: 3rem;
+    align-items: start;
+  }
+
+  @media (max-width: 700px) {
+    .project-body { grid-template-columns: 1fr; }
+  }
+
+  .project-description h3 {
+    font-family: 'Space Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--accent2);
+    margin-bottom: 0.75rem;
+    margin-top: 1.75rem;
+  }
+  .project-description h3:first-child { margin-top: 0; }
+
+  .project-description p {
+    color: var(--text);
+    font-size: 1rem;
+    font-weight: 300;
+    margin-bottom: 0.5rem;
+  }
+
+  .deliverables-card {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 1.5rem;
+    position: sticky;
+    top: 80px;
+  }
+
+  .deliverables-card h3 {
+    font-family: 'Space Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 1.2rem;
+  }
+
+  .deliverable-link {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    color: var(--text);
+    text-decoration: none;
+    font-size: 0.9rem;
+    padding: 0.5rem 0;
+    border-bottom: 1px solid var(--border);
+    transition: color 0.2s;
+    cursor: pointer;
+  }
+  .deliverable-link:last-child { border-bottom: none; }
+  .deliverable-link:hover { color: var(--accent); }
+
+  .deliverable-link::before {
+    content: '↗';
+    font-size: 0.75rem;
+    color: var(--accent);
+    flex-shrink: 0;
+  }
+
+  /* CONCLUSION PAGE */
+  .conclusion-page {
+    max-width: 780px;
+    margin: 0 auto;
+    padding: 4rem 2rem 5rem;
+  }
+
+  .conclusion-page .section-label {
+    font-family: 'Space Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 1rem;
+  }
+
+  .conclusion-page h1 {
+    font-family: 'Cinzel Decorative', serif;
+    font-size: clamp(1.6rem, 4vw, 2.8rem);
+    color: #fff;
+    line-height: 1.2;
+    margin-bottom: 2.5rem;
+  }
+
+  .conclusion-page p {
+    font-size: 1.1rem;
+    font-weight: 300;
+    color: var(--text);
+    margin-bottom: 1.25rem;
+    line-height: 1.85;
+  }
+
+  .conclusion-page .closing-accent {
+    display: block;
+    margin-top: 3rem;
+    font-family: 'Cinzel Decorative', serif;
+    font-size: 1rem;
+    color: var(--accent);
+    text-align: center;
+    letter-spacing: 0.1em;
+  }
+</style>
+</head>
+<body>
+
+<nav id="nav">
+  <button class="nav-tab active" onclick="showPage('home', this)">Home</button>
+  <button class="nav-tab" onclick="showPage('p1', this)">Project 1</button>
+  <button class="nav-tab" onclick="showPage('p2', this)">Project 2</button>
+  <button class="nav-tab" onclick="showPage('p3', this)">Project 3</button>
+  <button class="nav-tab" onclick="showPage('p4', this)">Project 4</button>
+  <button class="nav-tab" onclick="showPage('p5', this)">Project 5</button>
+  <button class="nav-tab" onclick="showPage('p6', this)">Project 6</button>
+  <button class="nav-tab" onclick="showPage('conclusion', this)">Conclusion</button>
+</nav>
+
+<!-- HOME -->
+<div class="page active" id="home">
+  <div class="hero">
+    <p class="hero-eyebrow">Game Design Portfolio · [Your Name] · [Course Name]</p>
+    <h1 class="hero-title">The <span>Art</span> of<br>Designed Worlds</h1>
+    <p class="hero-subtitle">A semester's work in game design — documented.</p>
+    <div class="divider"></div>
+  </div>
+
+  <div class="exec-summary">
+    <h2>Executive Summary</h2>
+    <p>
+      Replace this with your executive summary — a few paragraphs covering what the course was about, what you set out to do, and what you made across the six projects. Think of it as the "abstract" for your whole semester.
+    </p>
+    <p>
+      You might touch on major themes you explored (mechanics, narrative, level design, etc.), how your thinking evolved over the semester, and what the capstone project — or your most significant work — represents.
+    </p>
+  </div>
+</div>
+
+<!-- PROJECTS 1–6 -->
+<div class="page" id="p1">
+  <div class="project-page">
+    <div class="project-header">
+      <p class="project-number">PROJECT 01</p>
+      <h1 class="project-title">Project Title Here</h1>
+      <p class="project-tagline">A short tagline or subtitle for the project</p>
+    </div>
+    <div class="project-body">
+      <div class="project-description">
+        <h3>Overview</h3>
+        <p>Describe what this project or module was. What was the brief? What concept or skill area did it focus on?</p>
+        <h3>What I Made</h3>
+        <p>Describe what you created — a game design document, prototype, level, pitch, etc. What decisions did you make and why?</p>
+        <h3>Key Takeaways</h3>
+        <p>One or two sentences on what you learned or what you'd do differently.</p>
+      </div>
+      <div class="deliverables-card">
+        <h3>Deliverables</h3>
+        <a class="deliverable-link" href="#">Game Design Document (PDF)</a>
+        <a class="deliverable-link" href="#">Concept Art</a>
+        <a class="deliverable-link" href="#">Presentation Slides</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="page" id="p2">
+  <div class="project-page">
+    <div class="project-header">
+      <p class="project-number">PROJECT 02</p>
+      <h1 class="project-title">Project Title Here</h1>
+      <p class="project-tagline">A short tagline or subtitle for the project</p>
+    </div>
+    <div class="project-body">
+      <div class="project-description">
+        <h3>Overview</h3>
+        <p>Describe what this project or module was.</p>
+        <h3>What I Made</h3>
+        <p>Describe what you created and the decisions behind it.</p>
+        <h3>Key Takeaways</h3>
+        <p>What you learned or would do differently.</p>
+      </div>
+      <div class="deliverables-card">
+        <h3>Deliverables</h3>
+        <a class="deliverable-link" href="#">Deliverable One</a>
+        <a class="deliverable-link" href="#">Deliverable Two</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="page" id="p3">
+  <div class="project-page">
+    <div class="project-header">
+      <p class="project-number">PROJECT 03</p>
+      <h1 class="project-title">Project Title Here</h1>
+      <p class="project-tagline">A short tagline or subtitle for the project</p>
+    </div>
+    <div class="project-body">
+      <div class="project-description">
+        <h3>Overview</h3>
+        <p>Describe what this project or module was.</p>
+        <h3>What I Made</h3>
+        <p>Describe what you created and the decisions behind it.</p>
+        <h3>Key Takeaways</h3>
+        <p>What you learned or would do differently.</p>
+      </div>
+      <div class="deliverables-card">
+        <h3>Deliverables</h3>
+        <a class="deliverable-link" href="#">Deliverable One</a>
+        <a class="deliverable-link" href="#">Deliverable Two</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="page" id="p4">
+  <div class="project-page">
+    <div class="project-header">
+      <p class="project-number">PROJECT 04</p>
+      <h1 class="project-title">Project Title Here</h1>
+      <p class="project-tagline">A short tagline or subtitle for the project</p>
+    </div>
+    <div class="project-body">
+      <div class="project-description">
+        <h3>Overview</h3>
+        <p>Describe what this project or module was.</p>
+        <h3>What I Made</h3>
+        <p>Describe what you created and the decisions behind it.</p>
+        <h3>Key Takeaways</h3>
+        <p>What you learned or would do differently.</p>
+      </div>
+      <div class="deliverables-card">
+        <h3>Deliverables</h3>
+        <a class="deliverable-link" href="#">Deliverable One</a>
+        <a class="deliverable-link" href="#">Deliverable Two</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="page" id="p5">
+  <div class="project-page">
+    <div class="project-header">
+      <p class="project-number">PROJECT 05</p>
+      <h1 class="project-title">Project Title Here</h1>
+      <p class="project-tagline">A short tagline or subtitle for the project</p>
+    </div>
+    <div class="project-body">
+      <div class="project-description">
+        <h3>Overview</h3>
+        <p>Describe what this project or module was.</p>
+        <h3>What I Made</h3>
+        <p>Describe what you created and the decisions behind it.</p>
+        <h3>Key Takeaways</h3>
+        <p>What you learned or would do differently.</p>
+      </div>
+      <div class="deliverables-card">
+        <h3>Deliverables</h3>
+        <a class="deliverable-link" href="#">Deliverable One</a>
+        <a class="deliverable-link" href="#">Deliverable Two</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="page" id="p6">
+  <div class="project-page">
+    <div class="project-header">
+      <p class="project-number">PROJECT 06</p>
+      <h1 class="project-title">Project Title Here</h1>
+      <p class="project-tagline">A short tagline or subtitle for the project</p>
+    </div>
+    <div class="project-body">
+      <div class="project-description">
+        <h3>Overview</h3>
+        <p>Describe what this project or module was.</p>
+        <h3>What I Made</h3>
+        <p>Describe what you created and the decisions behind it.</p>
+        <h3>Key Takeaways</h3>
+        <p>What you learned or would do differently.</p>
+      </div>
+      <div class="deliverables-card">
+        <h3>Deliverables</h3>
+        <a class="deliverable-link" href="#">Deliverable One</a>
+        <a class="deliverable-link" href="#">Deliverable Two</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- CONCLUSION -->
+<div class="page" id="conclusion">
+  <div class="conclusion-page">
+    <p class="section-label">Conclusion</p>
+    <h1>Reflections on a<br>Semester Designing</h1>
+    <p>
+      This is your conclusion — a few paragraphs reflecting on the semester as a whole. What did the arc of your work look like? How did your understanding of game design deepen or shift?
+    </p>
+    <p>
+      You might talk about what you're most proud of, what challenged you most, and what you'd carry forward into future work — whether that's design principles, tools, or a project you want to keep developing.
+    </p>
+    <p>
+      End with something forward-looking: where do you see yourself taking these skills?
+    </p>
+    <span class="closing-accent">✦</span>
+  </div>
+</div>
+
+<script>
+  function showPage(id, btn) {
+    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+    document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+    document.getElementById(id).classList.add('active');
+    btn.classList.add('active');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+</script>
+</body>
+</html>
