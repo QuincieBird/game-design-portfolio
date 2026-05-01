@@ -15,7 +15,8 @@
     --accent2: #7c6fbf;
     --text: #d4cfcf;
     --muted: #6b6880;
-    --glow: rgba(200, 169, 110, 0.15);
+    --highlight: rgba(200, 169, 110, 0.18);
+    --highlight-border: rgba(200, 169, 110, 0.5);
   }
 
   * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -29,7 +30,6 @@
     min-height: 100vh;
   }
 
-  /* Noise texture overlay */
   body::before {
     content: '';
     position: fixed;
@@ -40,7 +40,22 @@
     opacity: 0.4;
   }
 
-  /* NAV */
+  /* HIGHLIGHT STYLES */
+  .fill-me {
+    background: var(--highlight);
+    border: 1px dashed var(--highlight-border);
+    border-radius: 3px;
+    padding: 2px 6px;
+    cursor: text;
+    position: relative;
+  }
+  .fill-me::after {
+    content: ' ✎';
+    font-size: 0.75em;
+    color: var(--accent);
+    opacity: 0.7;
+  }
+
   nav {
     position: sticky;
     top: 0;
@@ -72,12 +87,8 @@
     flex-shrink: 0;
   }
   .nav-tab:hover { color: var(--text); }
-  .nav-tab.active {
-    color: var(--accent);
-    border-bottom-color: var(--accent);
-  }
+  .nav-tab.active { color: var(--accent); border-bottom-color: var(--accent); }
 
-  /* PAGES */
   .page { display: none; animation: fadeIn 0.35s ease; }
   .page.active { display: block; }
 
@@ -86,7 +97,6 @@
     to { opacity: 1; transform: translateY(0); }
   }
 
-  /* HOME PAGE */
   .hero {
     min-height: 70vh;
     display: flex;
@@ -98,7 +108,6 @@
     position: relative;
     overflow: hidden;
   }
-
   .hero::before {
     content: '';
     position: absolute;
@@ -121,7 +130,6 @@
     opacity: 0;
     animation: fadeIn 0.5s 0.1s forwards;
   }
-
   .hero-title {
     font-family: 'Cinzel Decorative', serif;
     font-size: clamp(2rem, 6vw, 4rem);
@@ -132,11 +140,7 @@
     opacity: 0;
     animation: fadeIn 0.5s 0.2s forwards;
   }
-
-  .hero-title span {
-    color: var(--accent);
-  }
-
+  .hero-title span { color: var(--accent); }
   .hero-subtitle {
     font-family: 'Crimson Pro', serif;
     font-style: italic;
@@ -146,7 +150,6 @@
     opacity: 0;
     animation: fadeIn 0.5s 0.3s forwards;
   }
-
   .divider {
     width: 80px;
     height: 1px;
@@ -154,7 +157,6 @@
     margin: 2rem auto;
   }
 
-  /* EXEC SUMMARY */
   .exec-summary {
     max-width: 780px;
     margin: 0 auto;
@@ -162,7 +164,6 @@
     opacity: 0;
     animation: fadeIn 0.5s 0.4s forwards;
   }
-
   .exec-summary h2 {
     font-family: 'Space Mono', monospace;
     font-size: 11px;
@@ -171,7 +172,6 @@
     color: var(--accent2);
     margin-bottom: 1.2rem;
   }
-
   .exec-summary p {
     color: var(--text);
     font-size: 1.1rem;
@@ -180,19 +180,16 @@
     margin-bottom: 1rem;
   }
 
-  /* PROJECT PAGES */
   .project-page {
     max-width: 860px;
     margin: 0 auto;
     padding: 4rem 2rem;
   }
-
   .project-header {
     margin-bottom: 3rem;
     padding-bottom: 2rem;
     border-bottom: 1px solid var(--border);
   }
-
   .project-number {
     font-family: 'Space Mono', monospace;
     font-size: 11px;
@@ -200,7 +197,6 @@
     color: var(--accent);
     margin-bottom: 0.75rem;
   }
-
   .project-title {
     font-family: 'Cinzel Decorative', serif;
     font-size: clamp(1.4rem, 3vw, 2.2rem);
@@ -208,12 +204,7 @@
     line-height: 1.2;
     margin-bottom: 0.75rem;
   }
-
-  .project-tagline {
-    font-style: italic;
-    color: var(--muted);
-    font-size: 1.05rem;
-  }
+  .project-tagline { font-style: italic; color: var(--muted); font-size: 1.05rem; }
 
   .project-body {
     display: grid;
@@ -221,10 +212,7 @@
     gap: 3rem;
     align-items: start;
   }
-
-  @media (max-width: 700px) {
-    .project-body { grid-template-columns: 1fr; }
-  }
+  @media (max-width: 700px) { .project-body { grid-template-columns: 1fr; } }
 
   .project-description h3 {
     font-family: 'Space Mono', monospace;
@@ -236,7 +224,6 @@
     margin-top: 1.75rem;
   }
   .project-description h3:first-child { margin-top: 0; }
-
   .project-description p {
     color: var(--text);
     font-size: 1rem;
@@ -252,7 +239,6 @@
     position: sticky;
     top: 80px;
   }
-
   .deliverables-card h3 {
     font-family: 'Space Mono', monospace;
     font-size: 10px;
@@ -261,7 +247,6 @@
     color: var(--accent);
     margin-bottom: 1.2rem;
   }
-
   .deliverable-link {
     display: flex;
     align-items: center;
@@ -272,25 +257,16 @@
     padding: 0.5rem 0;
     border-bottom: 1px solid var(--border);
     transition: color 0.2s;
-    cursor: pointer;
   }
   .deliverable-link:last-child { border-bottom: none; }
   .deliverable-link:hover { color: var(--accent); }
+  .deliverable-link::before { content: '↗'; font-size: 0.75rem; color: var(--accent); flex-shrink: 0; }
 
-  .deliverable-link::before {
-    content: '↗';
-    font-size: 0.75rem;
-    color: var(--accent);
-    flex-shrink: 0;
-  }
-
-  /* CONCLUSION PAGE */
   .conclusion-page {
     max-width: 780px;
     margin: 0 auto;
     padding: 4rem 2rem 5rem;
   }
-
   .conclusion-page .section-label {
     font-family: 'Space Mono', monospace;
     font-size: 11px;
@@ -299,7 +275,6 @@
     color: var(--accent);
     margin-bottom: 1rem;
   }
-
   .conclusion-page h1 {
     font-family: 'Cinzel Decorative', serif;
     font-size: clamp(1.6rem, 4vw, 2.8rem);
@@ -307,7 +282,6 @@
     line-height: 1.2;
     margin-bottom: 2.5rem;
   }
-
   .conclusion-page p {
     font-size: 1.1rem;
     font-weight: 300;
@@ -315,7 +289,6 @@
     margin-bottom: 1.25rem;
     line-height: 1.85;
   }
-
   .conclusion-page .closing-accent {
     display: block;
     margin-top: 3rem;
@@ -329,184 +302,178 @@
 </head>
 <body>
 
-<nav id="nav">
+<nav>
   <button class="nav-tab active" onclick="showPage('home', this)">Home</button>
-  <button class="nav-tab" onclick="showPage('p1', this)">Project 1</button>
-  <button class="nav-tab" onclick="showPage('p2', this)">Project 2</button>
-  <button class="nav-tab" onclick="showPage('p3', this)">Project 3</button>
-  <button class="nav-tab" onclick="showPage('p4', this)">Project 4</button>
-  <button class="nav-tab" onclick="showPage('p5', this)">Project 5</button>
-  <button class="nav-tab" onclick="showPage('p6', this)">Project 6</button>
+  <button class="nav-tab" onclick="showPage('p1', this)">Voidbound</button>
+  <button class="nav-tab" onclick="showPage('p2', this)">TideBound</button>
+  <button class="nav-tab" onclick="showPage('p3', this)">Delve</button>
+  <button class="nav-tab" onclick="showPage('p4', this)">Dot Zone</button>
+  <button class="nav-tab" onclick="showPage('p5', this)">Corp. Jeopardy</button>
+  <button class="nav-tab" onclick="showPage('p6', this)">Connect to the Beat</button>
   <button class="nav-tab" onclick="showPage('conclusion', this)">Conclusion</button>
 </nav>
 
 <!-- HOME -->
 <div class="page active" id="home">
   <div class="hero">
-    <p class="hero-eyebrow">Game Design Portfolio · [Your Name] · [Course Name]</p>
-    <h1 class="hero-title">The <span>Art</span> of<br>Designed Worlds</h1>
-    <p class="hero-subtitle">A semester's work in game design — documented.</p>
+    <p class="hero-eyebrow"><span class="fill-me">Your Name</span> · <span class="fill-me">Course Name</span> · <span class="fill-me">Semester & Year</span></p>
+    <h1 class="hero-title">Game <span>Design</span><br>Portfolio</h1>
+    <p class="hero-subtitle"><span class="fill-me">A short evocative subtitle — e.g. "Six projects. Six worlds."</span></p>
     <div class="divider"></div>
   </div>
-
   <div class="exec-summary">
     <h2>Executive Summary</h2>
-    <p>
-      Replace this with your executive summary — a few paragraphs covering what the course was about, what you set out to do, and what you made across the six projects. Think of it as the "abstract" for your whole semester.
-    </p>
-    <p>
-      You might touch on major themes you explored (mechanics, narrative, level design, etc.), how your thinking evolved over the semester, and what the capstone project — or your most significant work — represents.
-    </p>
+    <p class="fill-me">Write 2–3 sentences introducing the course and what you set out to do this semester. What was the overall theme or focus of the class?</p>
+    <p class="fill-me">Describe the arc of your work — how did your projects build on each other? What skills or concepts did you develop over time?</p>
+    <p class="fill-me">Close with a sentence or two on what this portfolio represents to you and what you're taking away from the experience.</p>
   </div>
 </div>
 
-<!-- PROJECTS 1–6 -->
+<!-- PROJECT 1 -->
 <div class="page" id="p1">
   <div class="project-page">
     <div class="project-header">
       <p class="project-number">PROJECT 01</p>
-      <h1 class="project-title">Project Title Here</h1>
-      <p class="project-tagline">A short tagline or subtitle for the project</p>
+      <h1 class="project-title">Voidbound: Signal Lost</h1>
+      <p class="project-tagline fill-me">A short tagline or one-sentence pitch for this game</p>
     </div>
     <div class="project-body">
       <div class="project-description">
         <h3>Overview</h3>
-        <p>Describe what this project or module was. What was the brief? What concept or skill area did it focus on?</p>
+        <p class="fill-me">What was the brief or prompt for this assignment? What concept or module did it cover?</p>
         <h3>What I Made</h3>
-        <p>Describe what you created — a game design document, prototype, level, pitch, etc. What decisions did you make and why?</p>
+        <p class="fill-me">Describe your deliverable — what type of document/artifact did you create, and what were the key design decisions you made?</p>
         <h3>Key Takeaways</h3>
-        <p>One or two sentences on what you learned or what you'd do differently.</p>
+        <p class="fill-me">One or two sentences on what you learned or what you'd do differently.</p>
       </div>
       <div class="deliverables-card">
         <h3>Deliverables</h3>
-        <a class="deliverable-link" href="#">Game Design Document (PDF)</a>
-        <a class="deliverable-link" href="#">Concept Art</a>
-        <a class="deliverable-link" href="#">Presentation Slides</a>
+        <a class="deliverable-link" href="files/Assignment-1-Voidbound-Signal-Lost.pdf">Voidbound: Signal Lost</a>
       </div>
     </div>
   </div>
 </div>
 
+<!-- PROJECT 2 -->
 <div class="page" id="p2">
   <div class="project-page">
     <div class="project-header">
       <p class="project-number">PROJECT 02</p>
-      <h1 class="project-title">Project Title Here</h1>
-      <p class="project-tagline">A short tagline or subtitle for the project</p>
+      <h1 class="project-title">TideBound</h1>
+      <p class="project-tagline fill-me">A short tagline or one-sentence pitch for this game</p>
     </div>
     <div class="project-body">
       <div class="project-description">
         <h3>Overview</h3>
-        <p>Describe what this project or module was.</p>
+        <p class="fill-me">What was the brief or prompt for this assignment?</p>
         <h3>What I Made</h3>
-        <p>Describe what you created and the decisions behind it.</p>
+        <p class="fill-me">Describe your deliverable and key design decisions.</p>
         <h3>Key Takeaways</h3>
-        <p>What you learned or would do differently.</p>
+        <p class="fill-me">One or two sentences on what you learned.</p>
       </div>
       <div class="deliverables-card">
         <h3>Deliverables</h3>
-        <a class="deliverable-link" href="#">Deliverable One</a>
-        <a class="deliverable-link" href="#">Deliverable Two</a>
+        <a class="deliverable-link" href="files/Assignment-2-TideBound.pdf">TideBound</a>
       </div>
     </div>
   </div>
 </div>
 
+<!-- PROJECT 3 -->
 <div class="page" id="p3">
   <div class="project-page">
     <div class="project-header">
       <p class="project-number">PROJECT 03</p>
-      <h1 class="project-title">Project Title Here</h1>
-      <p class="project-tagline">A short tagline or subtitle for the project</p>
+      <h1 class="project-title">Delve</h1>
+      <p class="project-tagline fill-me">A short tagline or one-sentence pitch for this game</p>
     </div>
     <div class="project-body">
       <div class="project-description">
         <h3>Overview</h3>
-        <p>Describe what this project or module was.</p>
+        <p class="fill-me">What was the brief or prompt for this assignment?</p>
         <h3>What I Made</h3>
-        <p>Describe what you created and the decisions behind it.</p>
+        <p class="fill-me">Describe your deliverable and key design decisions.</p>
         <h3>Key Takeaways</h3>
-        <p>What you learned or would do differently.</p>
+        <p class="fill-me">One or two sentences on what you learned.</p>
       </div>
       <div class="deliverables-card">
         <h3>Deliverables</h3>
-        <a class="deliverable-link" href="#">Deliverable One</a>
-        <a class="deliverable-link" href="#">Deliverable Two</a>
+        <a class="deliverable-link" href="files/Assignment-3-Delve.pdf">Delve</a>
       </div>
     </div>
   </div>
 </div>
 
+<!-- PROJECT 4 -->
 <div class="page" id="p4">
   <div class="project-page">
     <div class="project-header">
       <p class="project-number">PROJECT 04</p>
-      <h1 class="project-title">Project Title Here</h1>
-      <p class="project-tagline">A short tagline or subtitle for the project</p>
+      <h1 class="project-title">Dot Zone</h1>
+      <p class="project-tagline fill-me">A short tagline or one-sentence pitch for this game</p>
     </div>
     <div class="project-body">
       <div class="project-description">
         <h3>Overview</h3>
-        <p>Describe what this project or module was.</p>
+        <p class="fill-me">What was the brief or prompt for this assignment?</p>
         <h3>What I Made</h3>
-        <p>Describe what you created and the decisions behind it.</p>
+        <p class="fill-me">Describe your deliverable and key design decisions.</p>
         <h3>Key Takeaways</h3>
-        <p>What you learned or would do differently.</p>
+        <p class="fill-me">One or two sentences on what you learned.</p>
       </div>
       <div class="deliverables-card">
         <h3>Deliverables</h3>
-        <a class="deliverable-link" href="#">Deliverable One</a>
-        <a class="deliverable-link" href="#">Deliverable Two</a>
+        <a class="deliverable-link" href="files/Assignment-4-Dot-Zone.pdf">Dot Zone</a>
       </div>
     </div>
   </div>
 </div>
 
+<!-- PROJECT 5 -->
 <div class="page" id="p5">
   <div class="project-page">
     <div class="project-header">
       <p class="project-number">PROJECT 05</p>
-      <h1 class="project-title">Project Title Here</h1>
-      <p class="project-tagline">A short tagline or subtitle for the project</p>
+      <h1 class="project-title">Corporate Jeopardy</h1>
+      <p class="project-tagline fill-me">A short tagline or one-sentence pitch for this game</p>
     </div>
     <div class="project-body">
       <div class="project-description">
         <h3>Overview</h3>
-        <p>Describe what this project or module was.</p>
+        <p class="fill-me">What was the brief or prompt for this assignment?</p>
         <h3>What I Made</h3>
-        <p>Describe what you created and the decisions behind it.</p>
+        <p class="fill-me">Describe your deliverable and key design decisions.</p>
         <h3>Key Takeaways</h3>
-        <p>What you learned or would do differently.</p>
+        <p class="fill-me">One or two sentences on what you learned.</p>
       </div>
       <div class="deliverables-card">
         <h3>Deliverables</h3>
-        <a class="deliverable-link" href="#">Deliverable One</a>
-        <a class="deliverable-link" href="#">Deliverable Two</a>
+        <a class="deliverable-link" href="files/Assignment-5-Corporate-Jeopardy.html">Corporate Jeopardy (Playable)</a>
       </div>
     </div>
   </div>
 </div>
 
+<!-- PROJECT 6 -->
 <div class="page" id="p6">
   <div class="project-page">
     <div class="project-header">
       <p class="project-number">PROJECT 06</p>
-      <h1 class="project-title">Project Title Here</h1>
-      <p class="project-tagline">A short tagline or subtitle for the project</p>
+      <h1 class="project-title">Connect to the Beat</h1>
+      <p class="project-tagline fill-me">A short tagline or one-sentence pitch for this game</p>
     </div>
     <div class="project-body">
       <div class="project-description">
         <h3>Overview</h3>
-        <p>Describe what this project or module was.</p>
+        <p class="fill-me">What was the brief or prompt for this assignment?</p>
         <h3>What I Made</h3>
-        <p>Describe what you created and the decisions behind it.</p>
+        <p class="fill-me">Describe your deliverable and key design decisions.</p>
         <h3>Key Takeaways</h3>
-        <p>What you learned or would do differently.</p>
+        <p class="fill-me">One or two sentences on what you learned.</p>
       </div>
       <div class="deliverables-card">
         <h3>Deliverables</h3>
-        <a class="deliverable-link" href="#">Deliverable One</a>
-        <a class="deliverable-link" href="#">Deliverable Two</a>
+        <a class="deliverable-link" href="files/Assignment-6-Connect-to-the-Beat.pdf">Connect to the Beat</a>
       </div>
     </div>
   </div>
@@ -517,15 +484,9 @@
   <div class="conclusion-page">
     <p class="section-label">Conclusion</p>
     <h1>Reflections on a<br>Semester Designing</h1>
-    <p>
-      This is your conclusion — a few paragraphs reflecting on the semester as a whole. What did the arc of your work look like? How did your understanding of game design deepen or shift?
-    </p>
-    <p>
-      You might talk about what you're most proud of, what challenged you most, and what you'd carry forward into future work — whether that's design principles, tools, or a project you want to keep developing.
-    </p>
-    <p>
-      End with something forward-looking: where do you see yourself taking these skills?
-    </p>
+    <p class="fill-me">Reflect on the semester as a whole — what did the arc of your work look like? How did your understanding of game design grow or shift?</p>
+    <p class="fill-me">What are you most proud of? What challenged you most across these six projects?</p>
+    <p class="fill-me">Close with something forward-looking — where do you see yourself taking these skills?</p>
     <span class="closing-accent">✦</span>
   </div>
 </div>
