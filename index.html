@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Game Design Portfolio</title>
+<title>Game Design Portfolio - Delaney O'Kray-Murphy</title>
 <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700&family=Crimson+Pro:ital,wght@0,300;0,400;1,300&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
 <style>
   :root {
@@ -15,7 +15,6 @@
     --accent2: #7c6fbf;
     --text: #d4cfcf;
     --muted: #6b6880;
-    --glow: rgba(200, 169, 110, 0.15);
   }
 
   * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -29,7 +28,6 @@
     min-height: 100vh;
   }
 
-  /* Noise texture overlay */
   body::before {
     content: '';
     position: fixed;
@@ -40,7 +38,6 @@
     opacity: 0.4;
   }
 
-  /* NAV */
   nav {
     position: sticky;
     top: 0;
@@ -72,12 +69,8 @@
     flex-shrink: 0;
   }
   .nav-tab:hover { color: var(--text); }
-  .nav-tab.active {
-    color: var(--accent);
-    border-bottom-color: var(--accent);
-  }
+  .nav-tab.active { color: var(--accent); border-bottom-color: var(--accent); }
 
-  /* PAGES */
   .page { display: none; animation: fadeIn 0.35s ease; }
   .page.active { display: block; }
 
@@ -86,7 +79,7 @@
     to { opacity: 1; transform: translateY(0); }
   }
 
-  /* HOME PAGE */
+  /* HOME */
   .hero {
     min-height: 70vh;
     display: flex;
@@ -98,7 +91,6 @@
     position: relative;
     overflow: hidden;
   }
-
   .hero::before {
     content: '';
     position: absolute;
@@ -110,7 +102,6 @@
     background: radial-gradient(ellipse, rgba(124,111,191,0.12) 0%, transparent 70%);
     pointer-events: none;
   }
-
   .hero-eyebrow {
     font-family: 'Space Mono', monospace;
     font-size: 11px;
@@ -121,7 +112,6 @@
     opacity: 0;
     animation: fadeIn 0.5s 0.1s forwards;
   }
-
   .hero-title {
     font-family: 'Cinzel Decorative', serif;
     font-size: clamp(2rem, 6vw, 4rem);
@@ -132,11 +122,7 @@
     opacity: 0;
     animation: fadeIn 0.5s 0.2s forwards;
   }
-
-  .hero-title span {
-    color: var(--accent);
-  }
-
+  .hero-title span { color: var(--accent); }
   .hero-subtitle {
     font-family: 'Crimson Pro', serif;
     font-style: italic;
@@ -146,15 +132,12 @@
     opacity: 0;
     animation: fadeIn 0.5s 0.3s forwards;
   }
-
   .divider {
     width: 80px;
     height: 1px;
     background: linear-gradient(90deg, transparent, var(--accent), transparent);
     margin: 2rem auto;
   }
-
-  /* EXEC SUMMARY */
   .exec-summary {
     max-width: 780px;
     margin: 0 auto;
@@ -162,7 +145,6 @@
     opacity: 0;
     animation: fadeIn 0.5s 0.4s forwards;
   }
-
   .exec-summary h2 {
     font-family: 'Space Mono', monospace;
     font-size: 11px;
@@ -171,7 +153,6 @@
     color: var(--accent2);
     margin-bottom: 1.2rem;
   }
-
   .exec-summary p {
     color: var(--text);
     font-size: 1.1rem;
@@ -186,13 +167,11 @@
     margin: 0 auto;
     padding: 4rem 2rem;
   }
-
   .project-header {
     margin-bottom: 3rem;
     padding-bottom: 2rem;
     border-bottom: 1px solid var(--border);
   }
-
   .project-number {
     font-family: 'Space Mono', monospace;
     font-size: 11px;
@@ -200,7 +179,6 @@
     color: var(--accent);
     margin-bottom: 0.75rem;
   }
-
   .project-title {
     font-family: 'Cinzel Decorative', serif;
     font-size: clamp(1.4rem, 3vw, 2.2rem);
@@ -208,12 +186,7 @@
     line-height: 1.2;
     margin-bottom: 0.75rem;
   }
-
-  .project-tagline {
-    font-style: italic;
-    color: var(--muted);
-    font-size: 1.05rem;
-  }
+  .project-tagline { font-style: italic; color: var(--muted); font-size: 1.05rem; }
 
   .project-body {
     display: grid;
@@ -221,10 +194,7 @@
     gap: 3rem;
     align-items: start;
   }
-
-  @media (max-width: 700px) {
-    .project-body { grid-template-columns: 1fr; }
-  }
+  @media (max-width: 700px) { .project-body { grid-template-columns: 1fr; } }
 
   .project-description h3 {
     font-family: 'Space Mono', monospace;
@@ -236,7 +206,6 @@
     margin-top: 1.75rem;
   }
   .project-description h3:first-child { margin-top: 0; }
-
   .project-description p {
     color: var(--text);
     font-size: 1rem;
@@ -252,7 +221,6 @@
     position: sticky;
     top: 80px;
   }
-
   .deliverables-card h3 {
     font-family: 'Space Mono', monospace;
     font-size: 10px;
@@ -261,7 +229,6 @@
     color: var(--accent);
     margin-bottom: 1.2rem;
   }
-
   .deliverable-link {
     display: flex;
     align-items: center;
@@ -272,25 +239,17 @@
     padding: 0.5rem 0;
     border-bottom: 1px solid var(--border);
     transition: color 0.2s;
-    cursor: pointer;
   }
   .deliverable-link:last-child { border-bottom: none; }
   .deliverable-link:hover { color: var(--accent); }
+  .deliverable-link::before { content: '↗'; font-size: 0.75rem; color: var(--accent); flex-shrink: 0; }
 
-  .deliverable-link::before {
-    content: '↗';
-    font-size: 0.75rem;
-    color: var(--accent);
-    flex-shrink: 0;
-  }
-
-  /* CONCLUSION PAGE */
+  /* CONCLUSION */
   .conclusion-page {
     max-width: 780px;
     margin: 0 auto;
     padding: 4rem 2rem 5rem;
   }
-
   .conclusion-page .section-label {
     font-family: 'Space Mono', monospace;
     font-size: 11px;
@@ -299,7 +258,6 @@
     color: var(--accent);
     margin-bottom: 1rem;
   }
-
   .conclusion-page h1 {
     font-family: 'Cinzel Decorative', serif;
     font-size: clamp(1.6rem, 4vw, 2.8rem);
@@ -307,7 +265,6 @@
     line-height: 1.2;
     margin-bottom: 2.5rem;
   }
-
   .conclusion-page p {
     font-size: 1.1rem;
     font-weight: 300;
@@ -315,7 +272,6 @@
     margin-bottom: 1.25rem;
     line-height: 1.85;
   }
-
   .conclusion-page .closing-accent {
     display: block;
     margin-top: 3rem;
@@ -329,184 +285,220 @@
 </head>
 <body>
 
-<nav id="nav">
+<nav>
   <button class="nav-tab active" onclick="showPage('home', this)">Home</button>
-  <button class="nav-tab" onclick="showPage('p1', this)">Project 1</button>
-  <button class="nav-tab" onclick="showPage('p2', this)">Project 2</button>
-  <button class="nav-tab" onclick="showPage('p3', this)">Project 3</button>
-  <button class="nav-tab" onclick="showPage('p4', this)">Project 4</button>
-  <button class="nav-tab" onclick="showPage('p5', this)">Project 5</button>
-  <button class="nav-tab" onclick="showPage('p6', this)">Project 6</button>
+  <button class="nav-tab" onclick="showPage('p1', this)">Voidbound</button>
+  <button class="nav-tab" onclick="showPage('p2', this)">TideBound</button>
+  <button class="nav-tab" onclick="showPage('p3', this)">Delve</button>
+  <button class="nav-tab" onclick="showPage('p4', this)">Dot Zone</button>
+  <button class="nav-tab" onclick="showPage('p5', this)">Corp. Jeopardy</button>
+  <button class="nav-tab" onclick="showPage('p6', this)">Connect to the Beat</button>
   <button class="nav-tab" onclick="showPage('conclusion', this)">Conclusion</button>
 </nav>
 
 <!-- HOME -->
 <div class="page active" id="home">
   <div class="hero">
-    <p class="hero-eyebrow">Game Design Portfolio · [Your Name] · [Course Name]</p>
-    <h1 class="hero-title">The <span>Art</span> of<br>Designed Worlds</h1>
-    <p class="hero-subtitle">A semester's work in game design — documented.</p>
+    <p class="hero-eyebrow">Delaney O'Kray-Murphy &nbsp;·&nbsp; GAME 251 &nbsp;·&nbsp; Spring 2026</p>
+    <h1 class="hero-title">Game <span>Design</span><br>Portfolio</h1>
+    <p class="hero-subtitle">Six projects. Six ideas.</p>
     <div class="divider"></div>
   </div>
-
   <div class="exec-summary">
     <h2>Executive Summary</h2>
     <p>
-      Replace this with your executive summary — a few paragraphs covering what the course was about, what you set out to do, and what you made across the six projects. Think of it as the "abstract" for your whole semester.
+      GAME 251 is a course about game design ideas and discussions, covering how to pitch, document, and present original game concepts across a range of formats and constraints. Each project had a specific design focus: core dynamics, investor pitches, puzzle mechanics, chance, serious games, and fast-paced Twitch-style play.
     </p>
     <p>
-      You might touch on major themes you explored (mechanics, narrative, level design, etc.), how your thinking evolved over the semester, and what the capstone project — or your most significant work — represents.
+      Some of my favorites came early in the semester, when I got to develop ideas I had already been thinking about for a while and finally had a reason to actually put them on paper. The later projects pushed me to come up with new concepts more quickly and work within tighter constraints, which was a different kind of fun.
+    </p>
+    <p>
+      I really enjoyed the visual side of all of it, making presentations look good and trying to communicate ideas in a way that felt appealing. I'm proud of a lot of what's here and I'm excited to have somewhere to share it. Enjoy and have fun looking around.
     </p>
   </div>
 </div>
 
-<!-- PROJECTS 1–6 -->
+<!-- PROJECT 1 -->
 <div class="page" id="p1">
   <div class="project-page">
     <div class="project-header">
       <p class="project-number">PROJECT 01</p>
-      <h1 class="project-title">Project Title Here</h1>
-      <p class="project-tagline">A short tagline or subtitle for the project</p>
+      <h1 class="project-title">Voidbound: Signal Lost</h1>
+      <p class="project-tagline">Wake up alone in space. Figure out what happened before the ship takes you with it.</p>
     </div>
     <div class="project-body">
       <div class="project-description">
         <h3>Overview</h3>
-        <p>Describe what this project or module was. What was the brief? What concept or skill area did it focus on?</p>
+        <p>
+          This assignment asked us to build a game concept around a core dynamic. I chose survival, specifically the tension of managing limited resources in a hostile environment with no memory of how you got there.
+        </p>
         <h3>What I Made</h3>
-        <p>Describe what you created — a game design document, prototype, level, pitch, etc. What decisions did you make and why?</p>
+        <p>
+          Voidbound is a space survival game where you wake up with amnesia aboard a deteriorating ship drifting through deep space. The core loop is about surviving by scavenging for oxygen and resources, while slowly piecing together the mystery of what happened to the crew. The idea of surviving to discover, rather than surviving to escape, is what drives it forward.
+        </p>
         <h3>Key Takeaways</h3>
-        <p>One or two sentences on what you learned or what you'd do differently.</p>
+        <p>
+          This one is one of my favorites from the semester. I really like how it came out. If I were to go back I'd probably try to add more original doodles and sketches, but overall I'm happy with it as is.
+        </p>
       </div>
       <div class="deliverables-card">
         <h3>Deliverables</h3>
-        <a class="deliverable-link" href="#">Game Design Document (PDF)</a>
-        <a class="deliverable-link" href="#">Concept Art</a>
-        <a class="deliverable-link" href="#">Presentation Slides</a>
+        <a class="deliverable-link" href="files/Assignment-1-Voidbound-Signal-Lost.pdf">Voidbound: Signal Lost (PDF)</a>
       </div>
     </div>
   </div>
 </div>
 
+<!-- PROJECT 2 -->
 <div class="page" id="p2">
   <div class="project-page">
     <div class="project-header">
       <p class="project-number">PROJECT 02</p>
-      <h1 class="project-title">Project Title Here</h1>
-      <p class="project-tagline">A short tagline or subtitle for the project</p>
+      <h1 class="project-title">TideBound</h1>
+      <p class="project-tagline">Catch fish that don't exist yet. Draw them into being.</p>
     </div>
     <div class="project-body">
       <div class="project-description">
         <h3>Overview</h3>
-        <p>Describe what this project or module was.</p>
+        <p>
+          This assignment was a game pitch aimed at a potential investor. The goal was to sell an original concept clearly and compellingly, identifying the market, the hook, and the vision.
+        </p>
         <h3>What I Made</h3>
-        <p>Describe what you created and the decisions behind it.</p>
+        <p>
+          TideBound is a fishing game where every fish you catch has no appearance until you bring it back and draw it yourself. Players go around catching fish and then build out a personal aquarium filled with their own illustrations. The concept leans into the viral potential of streamers and content creators, since every player's aquarium is unique and shareable.
+        </p>
         <h3>Key Takeaways</h3>
-        <p>What you learned or would do differently.</p>
+        <p>
+          This is probably my strongest idea from the semester overall. If I were to develop it more I'd define the world better and add some kind of backstory or in-universe magic to explain why the fish have no appearance until you catch and draw them. It feels like it deserves more of a mythology behind it.
+        </p>
       </div>
       <div class="deliverables-card">
         <h3>Deliverables</h3>
-        <a class="deliverable-link" href="#">Deliverable One</a>
-        <a class="deliverable-link" href="#">Deliverable Two</a>
+        <a class="deliverable-link" href="files/Assignment-2-TideBound.pdf">TideBound Pitch (PDF)</a>
       </div>
     </div>
   </div>
 </div>
 
+<!-- PROJECT 3 -->
 <div class="page" id="p3">
   <div class="project-page">
     <div class="project-header">
       <p class="project-number">PROJECT 03</p>
-      <h1 class="project-title">Project Title Here</h1>
-      <p class="project-tagline">A short tagline or subtitle for the project</p>
+      <h1 class="project-title">Delve</h1>
+      <p class="project-tagline">A dungeon that builds itself as you descend.</p>
     </div>
     <div class="project-body">
       <div class="project-description">
         <h3>Overview</h3>
-        <p>Describe what this project or module was.</p>
+        <p>
+          Assignment 3 called for a puzzle game design. The puzzle element needed to be central to the mechanics and not just decorative, so I built it around riddle cards as a discovery mechanic woven into the dungeon structure.
+        </p>
         <h3>What I Made</h3>
-        <p>Describe what you created and the decisions behind it.</p>
+        <p>
+          Delve is a board game where players explore a dungeon that gets constructed as you play. It's designed as a bard game where the deeper you go, the more the dungeon reveals itself through drawn cards, riddles, and encounters. I talked through a lot of the design with my family which helped me work through the ideas, and I put the full game design document together in Canva which was a lot of fun.
+        </p>
         <h3>Key Takeaways</h3>
-        <p>What you learned or would do differently.</p>
+        <p>
+          I'm really happy with how this one came together. The Canva layout felt polished and the riddle card mechanic covers the puzzle requirement in a way that feels natural to the dungeon theme. I don't think I'd change much about it.
+        </p>
       </div>
       <div class="deliverables-card">
         <h3>Deliverables</h3>
-        <a class="deliverable-link" href="#">Deliverable One</a>
-        <a class="deliverable-link" href="#">Deliverable Two</a>
+        <a class="deliverable-link" href="files/Assignment-3-Delve.pdf">Delve GDD (PDF)</a>
       </div>
     </div>
   </div>
 </div>
 
+<!-- PROJECT 4 -->
 <div class="page" id="p4">
   <div class="project-page">
     <div class="project-header">
       <p class="project-number">PROJECT 04</p>
-      <h1 class="project-title">Project Title Here</h1>
-      <p class="project-tagline">A short tagline or subtitle for the project</p>
+      <h1 class="project-title">Dot Zone</h1>
+      <p class="project-tagline">Draw lines, roll dice, claim the map. But you built the map.</p>
     </div>
     <div class="project-body">
       <div class="project-description">
         <h3>Overview</h3>
-        <p>Describe what this project or module was.</p>
+        <p>
+          This assignment focused on games of chance. The challenge was designing something where luck plays a meaningful role without completely eliminating skill.
+        </p>
         <h3>What I Made</h3>
-        <p>Describe what you created and the decisions behind it.</p>
+        <p>
+          Dot Zone is a territory game inspired by the classic dots-and-boxes game you'd draw on paper in school. Here, players design the map themselves before play even starts, choosing where the dots go and how the board is laid out. Then each turn, players roll dice to determine how many lines they get to draw. So it's a mix of spatial strategy and luck: you can plan things out, but you can't control what you roll.
+        </p>
         <h3>Key Takeaways</h3>
-        <p>What you learned or would do differently.</p>
+        <p>
+          It's a fun concept and it works, but looking back I think I'd go for a larger scope. The dice mechanic feels like it could support more complex territory rules or even team play. It was a fun thing to try and I think there's more to explore with it.
+        </p>
       </div>
       <div class="deliverables-card">
         <h3>Deliverables</h3>
-        <a class="deliverable-link" href="#">Deliverable One</a>
-        <a class="deliverable-link" href="#">Deliverable Two</a>
+        <a class="deliverable-link" href="files/Assignment-4-Dot-Zone.pdf">Dot Zone (PDF)</a>
       </div>
     </div>
   </div>
 </div>
 
+<!-- PROJECT 5 -->
 <div class="page" id="p5">
   <div class="project-page">
     <div class="project-header">
       <p class="project-number">PROJECT 05</p>
-      <h1 class="project-title">Project Title Here</h1>
-      <p class="project-tagline">A short tagline or subtitle for the project</p>
+      <h1 class="project-title">Corporate Jeopardy</h1>
+      <p class="project-tagline">A trivia game about corporate malfeasance. Learn something. Be horrified.</p>
     </div>
     <div class="project-body">
       <div class="project-description">
         <h3>Overview</h3>
-        <p>Describe what this project or module was.</p>
+        <p>
+          Assignment 5 called for a serious game, meaning educational. The goal was to design something that actually informs or teaches players about a real-world topic through gameplay.
+        </p>
         <h3>What I Made</h3>
-        <p>Describe what you created and the decisions behind it.</p>
+        <p>
+          Corporate Jeopardy is a Jeopardy-style trivia game built around corporate malfeasance: the scandals, cover-ups, and ethically questionable decisions made by major corporations. Players answer questions across categories and learn about real cases as they play. It's fully playable as an HTML game.
+        </p>
         <h3>Key Takeaways</h3>
-        <p>What you learned or would do differently.</p>
+        <p>
+          I like this one but I think given more time I would have spent it finding weirder and funnier examples to include in the question bank. There's a lot of strange corporate behavior out there and I think leaning more into that would have made it more interesting and fun to play through.
+        </p>
       </div>
       <div class="deliverables-card">
         <h3>Deliverables</h3>
-        <a class="deliverable-link" href="#">Deliverable One</a>
-        <a class="deliverable-link" href="#">Deliverable Two</a>
+        <a class="deliverable-link" href="files/Assignment-5-Corporate-Jeoprady.html">Corporate Jeopardy (Playable)</a>
       </div>
     </div>
   </div>
 </div>
 
+<!-- PROJECT 6 -->
 <div class="page" id="p6">
   <div class="project-page">
     <div class="project-header">
       <p class="project-number">PROJECT 06</p>
-      <h1 class="project-title">Project Title Here</h1>
-      <p class="project-tagline">A short tagline or subtitle for the project</p>
+      <h1 class="project-title">Connect to the Beat</h1>
+      <p class="project-tagline">Connect 4, but the board resets to the music. And so do you.</p>
     </div>
     <div class="project-body">
       <div class="project-description">
         <h3>Overview</h3>
-        <p>Describe what this project or module was.</p>
+        <p>
+          The final assignment was a Twitch challenge game, so something fast-paced, high-energy, and built for a streaming audience where chaos and skill can coexist.
+        </p>
         <h3>What I Made</h3>
-        <p>Describe what you created and the decisions behind it.</p>
+        <p>
+          Connect to the Beat takes Connect 4 and syncs it to music. Players drop pieces on the beat and only on the beat. When the board fills it resets and play continues until the song ends. Scoring is based on performance across the whole song: how many connections you made, when you dropped pieces relative to the beat, and how consistently you stayed in rhythm. Some songs will naturally be harder to play to than others, but that's kind of the point. There's a natural skill ceiling to work toward and hopefully the pursuit of that is enjoyable on its own.
+        </p>
         <h3>Key Takeaways</h3>
-        <p>What you learned or would do differently.</p>
+        <p>
+          I'm really proud of this one. The rhythm mechanic gives it its own identity that feels separate from both Connect 4 and standard rhythm games. Syncing strategy to music is a genuinely interesting challenge and I think it's the kind of thing people would want to keep coming back to and get better at.
+        </p>
       </div>
       <div class="deliverables-card">
         <h3>Deliverables</h3>
-        <a class="deliverable-link" href="#">Deliverable One</a>
-        <a class="deliverable-link" href="#">Deliverable Two</a>
+        <a class="deliverable-link" href="files/Assignment-6-Connect-to-the-Beat.pdf">Connect to the Beat (PDF)</a>
       </div>
     </div>
   </div>
@@ -516,15 +508,18 @@
 <div class="page" id="conclusion">
   <div class="conclusion-page">
     <p class="section-label">Conclusion</p>
-    <h1>Reflections on a<br>Semester Designing</h1>
+    <h1>Six Ideas,<br>One Good Semester</h1>
     <p>
-      This is your conclusion — a few paragraphs reflecting on the semester as a whole. What did the arc of your work look like? How did your understanding of game design deepen or shift?
+      Honestly I took this class mostly just to have something to do and get something checked off, and it ended up being genuinely one of the more enjoyable things I've done. There's something nice about being required to have ideas. It creates a kind of pressure that actually gets things out of your head and onto a page.
     </p>
     <p>
-      You might talk about what you're most proud of, what challenged you most, and what you'd carry forward into future work — whether that's design principles, tools, or a project you want to keep developing.
+      I'm proud of a lot of what's in here. Voidbound was something I had been thinking about for a while and it felt good to finally put it together. TideBound is probably the strongest concept overall and the one I think has the most potential. Delve was fun to work through with my family. And Connect to the Beat is the one I keep thinking about in terms of what a finished version would actually feel like to play.
     </p>
     <p>
-      End with something forward-looking: where do you see yourself taking these skills?
+      I didn't expect to enjoy the presentation and visual side of it as much as I did. Making things look good and feel considered was something that came naturally and that I want to keep doing.
+    </p>
+    <p>
+      Whether any of these ever become real games or apps or something else, I hope they show that the thinking behind them was real. Thanks for looking.
     </p>
     <span class="closing-accent">✦</span>
   </div>
