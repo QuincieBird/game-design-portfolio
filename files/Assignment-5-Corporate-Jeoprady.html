@@ -5,132 +5,139 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Corporate Malfeasance Jeopardy</title>
 <style>
-  * { box-sizing: border-box; margin: 0; padding: 0; }
-  body { font-family: system-ui, sans-serif; background: #fff; color: #111; padding: 1rem; max-width: 780px; margin: 0 auto; }
-  #game { padding: 1rem 0; }
-  #board-screen, #question-screen, #final-screen { display: none; }
-  #board-screen.active, #question-screen.active, #final-screen.active { display: block; }
-  #intro-screen { display: block; }
-  .title-bar { text-align: center; padding: 1.2rem 0 0.5rem; }
-  .title-bar h1 { font-size: 24px; font-weight: 500; letter-spacing: -0.5px; }
-  .title-bar p { font-size: 13px; color: #666; margin-top: 4px; }
-  .score-bar { display: flex; justify-content: space-between; align-items: center; padding: 0.6rem 1rem; background: #f5f5f3; border-radius: 8px; margin: 0.75rem 0; }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 100%; min-height: 100vh; background: #ffffff; color: #111111; font-family: system-ui, -apple-system, sans-serif; }
+  #app { max-width: 760px; margin: 0 auto; padding: 1rem; }
+
+  .screen { display: none !important; }
+  .screen.active { display: block !important; }
+
+  /* INTRO */
+  #intro { text-align: center; padding: 3rem 1rem; }
+  .intro-icon { font-size: 48px; margin-bottom: 1rem; }
+  .intro-title { font-size: 28px; font-weight: 600; margin-bottom: 0.5rem; }
+  .intro-sub { font-size: 15px; color: #555; line-height: 1.65; max-width: 400px; margin: 0 auto 2rem; }
+
+  /* SHARED */
+  .page-title { text-align: center; font-size: 22px; font-weight: 600; padding: 1rem 0 0.25rem; }
+  .page-sub { text-align: center; font-size: 13px; color: #777; margin-bottom: 0.75rem; }
+  .score-bar { display: flex; justify-content: space-between; align-items: center; background: #f4f4f2; border-radius: 8px; padding: 0.6rem 1rem; margin-bottom: 0.75rem; }
   .score-label { font-size: 13px; color: #666; }
-  .score-val { font-size: 20px; font-weight: 500; }
-  .score-neg { color: #A32D2D; }
-  .board { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 6px; margin: 0.5rem 0; }
-  .cat-header { background: #185FA5; color: #B5D4F4; font-size: 10px; font-weight: 500; text-align: center; padding: 10px 4px; border-radius: 8px; line-height: 1.3; min-height: 56px; display: flex; align-items: center; justify-content: center; text-transform: uppercase; letter-spacing: 0.3px; }
-  .cell { background: #fff; border: 0.5px solid #ddd; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 17px; font-weight: 500; color: #185FA5; cursor: pointer; min-height: 56px; transition: background 0.15s; }
-  .cell:hover:not(.used) { background: #f5f5f3; }
-  .cell.used { background: #f5f5f3; color: #999; cursor: default; font-size: 13px; opacity: 0.4; }
-  .q-box { background: #fff; border: 0.5px solid #ddd; border-radius: 12px; padding: 1.5rem; margin: 0.5rem 0; }
-  .q-meta { font-size: 11px; color: #666; margin-bottom: 0.5rem; text-transform: uppercase; letter-spacing: 0.5px; }
-  .q-points { font-size: 22px; font-weight: 500; color: #185FA5; margin-bottom: 0.75rem; }
+  .score-val { font-size: 20px; font-weight: 600; }
+  .score-neg { color: #b91c1c; }
+
+  /* BOARD */
+  .board { display: grid; grid-template-columns: repeat(5, 1fr); gap: 6px; }
+  .cat-header { background: #1d4ed8; color: #bfdbfe; font-size: 10px; font-weight: 600; text-align: center; padding: 10px 4px; border-radius: 7px; min-height: 56px; display: flex; align-items: center; justify-content: center; text-transform: uppercase; letter-spacing: 0.4px; line-height: 1.3; }
+  .cell { background: #fff; border: 1px solid #e5e7eb; border-radius: 7px; display: flex; align-items: center; justify-content: center; font-size: 17px; font-weight: 600; color: #1d4ed8; cursor: pointer; min-height: 56px; transition: background 0.12s; }
+  .cell:hover { background: #f0f4ff; }
+  .cell.used { background: #f4f4f2; color: #aaa; cursor: default; font-size: 13px; opacity: 0.5; }
+  .board-footer { margin-top: 10px; }
+
+  /* QUESTION */
+  .q-box { background: #fff; border: 1px solid #e5e7eb; border-radius: 10px; padding: 1.5rem; margin-bottom: 0.5rem; }
+  .q-meta { font-size: 11px; color: #888; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 0.4rem; }
+  .q-pts { font-size: 22px; font-weight: 600; color: #1d4ed8; margin-bottom: 0.75rem; }
   .q-clue { font-size: 16px; line-height: 1.65; margin-bottom: 1.25rem; }
   .choices { display: flex; flex-direction: column; gap: 8px; margin-bottom: 1rem; }
-  .choice { background: #f5f5f3; border: 0.5px solid #ccc; border-radius: 8px; padding: 11px 15px; font-size: 14px; cursor: pointer; text-align: left; transition: background 0.12s; font-family: inherit; }
-  .choice:hover:not(:disabled) { background: #ebebea; }
-  .choice.correct { background: #EAF3DE; border-color: #639922; color: #3B6D11; }
-  .choice.wrong { background: #FCEBEB; border-color: #A32D2D; color: #791F1F; }
+  .choice { background: #f4f4f2; border: 1px solid #d1d5db; border-radius: 8px; padding: 11px 15px; font-size: 14px; cursor: pointer; text-align: left; font-family: inherit; transition: background 0.12s; }
+  .choice:hover:not(:disabled) { background: #e9e9e7; }
+  .choice.correct { background: #dcfce7; border-color: #16a34a; color: #14532d; }
+  .choice.wrong { background: #fee2e2; border-color: #b91c1c; color: #7f1d1d; }
   .choice:disabled { cursor: default; }
-  .feedback { font-size: 13px; line-height: 1.6; color: #444; padding: 10px 14px; background: #f5f5f3; border-radius: 8px; border-left: 3px solid #ccc; margin-bottom: 1rem; display: none; }
+  .feedback { font-size: 13px; line-height: 1.6; color: #444; background: #f4f4f2; border-left: 3px solid #aaa; border-radius: 6px; padding: 10px 14px; margin-bottom: 1rem; display: none; }
   .feedback.show { display: block; }
-  .feedback-verdict { font-weight: 500; font-size: 14px; margin-bottom: 4px; color: #111; }
-  .btn { background: transparent; border: 0.5px solid #ccc; border-radius: 8px; padding: 10px 20px; font-size: 14px; cursor: pointer; font-family: inherit; }
-  .btn:hover { background: #f5f5f3; }
-  .btn-primary { background: #185FA5; color: #E6F1FB; border-color: #185FA5; }
-  .btn-primary:hover { background: #0C447C; }
-  .btn-danger { color: #A32D2D; border-color: #A32D2D; background: transparent; }
-  .btn-danger:hover { background: #FCEBEB; }
-  .action-row { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
-  .reset-confirm { display: none; background: #FCEBEB; border: 0.5px solid #A32D2D; border-radius: 8px; padding: 10px 14px; font-size: 13px; color: #791F1F; margin-top: 8px; gap: 10px; flex-wrap: wrap; align-items: center; }
+  .feedback-verdict { font-weight: 600; font-size: 14px; color: #111; margin-bottom: 4px; }
+  .action-row { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+  .q-progress { font-size: 12px; color: #888; text-align: right; margin-top: 6px; }
+
+  /* FINAL */
+  #final { text-align: center; padding: 2.5rem 1rem; }
+  .final-score { font-size: 52px; font-weight: 700; margin: 0.5rem 0 1rem; }
+  .final-msg { font-size: 15px; color: #555; line-height: 1.7; max-width: 420px; margin: 0 auto 1.5rem; }
+
+  /* BUTTONS */
+  .btn { font-family: inherit; font-size: 14px; border-radius: 7px; padding: 10px 18px; cursor: pointer; border: 1px solid #d1d5db; background: transparent; color: #111; transition: background 0.12s; }
+  .btn:hover { background: #f4f4f2; }
+  .btn-primary { background: #1d4ed8; color: #fff; border-color: #1d4ed8; }
+  .btn-primary:hover { background: #1e40af; }
+  .btn-danger { color: #b91c1c; border-color: #b91c1c; }
+  .btn-danger:hover { background: #fee2e2; }
+
+  /* RESET CONFIRM */
+  .reset-confirm { display: none; background: #fee2e2; border: 1px solid #b91c1c; border-radius: 8px; padding: 10px 14px; font-size: 13px; color: #7f1d1d; gap: 10px; align-items: center; flex-wrap: wrap; margin-top: 8px; }
   .reset-confirm.show { display: flex; }
-  .final-box { text-align: center; padding: 2rem 1rem; }
-  .final-score { font-size: 52px; font-weight: 500; margin: 0.75rem 0; }
-  .final-msg { font-size: 15px; color: #555; margin-bottom: 1.5rem; line-height: 1.7; max-width: 440px; margin-left: auto; margin-right: auto; }
-  .final-btns { display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; }
-  #intro-screen { text-align: center; padding: 2rem 1rem; }
-  .intro-icon { font-size: 44px; margin-bottom: 0.75rem; }
-  .intro-title { font-size: 26px; font-weight: 500; margin-bottom: 0.5rem; }
-  .intro-sub { font-size: 15px; color: #555; margin-bottom: 1.75rem; line-height: 1.65; max-width: 400px; margin-left: auto; margin-right: auto; }
-  .progress-note { font-size: 12px; color: #666; text-align: right; margin-top: 4px; }
+  .reset-confirm .btn { padding: 6px 12px; font-size: 13px; }
 </style>
 </head>
 <body>
-<div id="game">
+<div id="app">
 
-<div id="intro-screen">
-  <div class="intro-icon">🏢</div>
-  <div class="intro-title">Corporate Malfeasance Jeopardy</div>
-  <div class="intro-sub">25 questions about history's most spectacular corporate wrongdoings. All facts are real. The companies did this to themselves. We just made it a game.</div>
-  <button class="btn btn-primary" onclick="startGame()">I'm ready to be outraged</button>
-</div>
+  <div id="intro" class="screen active">
+    <div class="intro-icon">🏢</div>
+    <div class="intro-title">Corporate Malfeasance Jeopardy</div>
+    <div class="intro-sub">25 questions about history's most spectacular corporate wrongdoings. All facts are sourced from public record. The companies did this to themselves. We just made it a game.</div>
+    <button class="btn btn-primary" onclick="startGame()">I'm ready to be outraged</button>
+  </div>
 
-<div id="board-screen">
-  <div class="title-bar">
-    <h1>Corporate Malfeasance Jeopardy</h1>
-    <p>Pick your poison</p>
-  </div>
-  <div class="score-bar">
-    <span class="score-label">Score</span>
-    <span class="score-val" id="score-display">$0</span>
-    <span class="score-label" id="remaining-display">25 clues left</span>
-  </div>
-  <div class="board" id="board"></div>
-  <div style="margin-top:10px;">
-    <button class="btn btn-danger" onclick="askReset()">Reset game</button>
-    <div class="reset-confirm" id="board-confirm">
-      <span>Abandon your score and start over?</span>
-      <button class="btn btn-danger" onclick="startGame()" style="padding:6px 14px;font-size:13px;">Yes, reset</button>
-      <button class="btn" onclick="cancelReset()" style="padding:6px 14px;font-size:13px;">Never mind</button>
+  <div id="board" class="screen">
+    <div class="page-title">Corporate Malfeasance Jeopardy</div>
+    <div class="page-sub">Pick your poison</div>
+    <div class="score-bar">
+      <span class="score-label">Score</span>
+      <span class="score-val" id="score-display">$0</span>
+      <span class="score-label" id="remaining-display">25 clues left</span>
+    </div>
+    <div class="board" id="board-grid"></div>
+    <div class="board-footer">
+      <button class="btn btn-danger" onclick="askReset('board')">Reset game</button>
+      <div class="reset-confirm" id="board-confirm">
+        <span>Abandon your score and start over?</span>
+        <button class="btn btn-danger" onclick="startGame()">Yes, reset</button>
+        <button class="btn" onclick="cancelReset('board')">Never mind</button>
+      </div>
     </div>
   </div>
-</div>
 
-<div id="question-screen">
-  <div class="title-bar"><h1>Corporate Malfeasance Jeopardy</h1></div>
-  <div class="score-bar">
-    <span class="score-label">Score</span>
-    <span class="score-val" id="q-score-display">$0</span>
-    <span class="score-label" id="q-cat-label"></span>
+  <div id="question" class="screen">
+    <div class="page-title">Corporate Malfeasance Jeopardy</div>
+    <div class="score-bar">
+      <span class="score-label">Score</span>
+      <span class="score-val" id="q-score-display">$0</span>
+      <span class="score-label" id="q-cat-label"></span>
+    </div>
+    <div class="q-box">
+      <div class="q-meta" id="q-meta"></div>
+      <div class="q-pts" id="q-pts"></div>
+      <div class="q-clue" id="q-clue"></div>
+      <div class="choices" id="choices"></div>
+      <div class="feedback" id="feedback">
+        <div class="feedback-verdict" id="feedback-verdict"></div>
+        <div id="feedback-detail"></div>
+      </div>
+      <div class="action-row">
+        <button class="btn btn-primary" id="continue-btn" onclick="continueGame()" style="display:none">Back to the board of shame</button>
+        <button class="btn btn-danger" id="q-reset-btn" onclick="askReset('q')" style="display:none">Reset game</button>
+      </div>
+      <div class="reset-confirm" id="q-confirm" style="margin-top:8px">
+        <span>Abandon your score and start over?</span>
+        <button class="btn btn-danger" onclick="startGame()">Yes, reset</button>
+        <button class="btn" onclick="cancelReset('q')">Never mind</button>
+      </div>
+    </div>
+    <div class="q-progress" id="q-progress"></div>
   </div>
-  <div class="q-box">
-    <div class="q-meta" id="q-meta"></div>
-    <div class="q-points" id="q-points"></div>
-    <div class="q-clue" id="q-clue"></div>
-    <div class="choices" id="choices"></div>
-    <div class="feedback" id="feedback">
-      <div class="feedback-verdict" id="feedback-verdict"></div>
-      <div id="feedback-detail"></div>
-    </div>
-    <div class="action-row">
-      <button class="btn btn-primary" id="continue-btn" onclick="continueGame()" style="display:none;">Back to the board of shame</button>
-      <button class="btn btn-danger" id="q-reset-btn" onclick="askResetQ()" style="display:none;">Reset game</button>
-    </div>
-    <div class="reset-confirm" id="q-confirm" style="margin-top:8px;">
-      <span>Abandon your score and start over?</span>
-      <button class="btn btn-danger" onclick="startGame()" style="padding:6px 14px;font-size:13px;">Yes, reset</button>
-      <button class="btn" onclick="cancelResetQ()" style="padding:6px 14px;font-size:13px;">Never mind</button>
-    </div>
-  </div>
-  <div class="progress-note" id="q-progress"></div>
-</div>
 
-<div id="final-screen">
-  <div class="title-bar"><h1>Corporate Malfeasance Jeopardy</h1></div>
-  <div class="final-box">
-    <div style="font-size:14px;color:#666;margin-bottom:0.25rem;">Final score</div>
-    <div class="final-score" id="final-score-display">$0</div>
+  <div id="final" class="screen">
+    <div class="page-title">Corporate Malfeasance Jeopardy</div>
+    <div class="final-score" id="final-score">$0</div>
     <div class="final-msg" id="final-msg"></div>
-    <div class="final-btns">
-      <button class="btn btn-primary" onclick="startGame()">Play again (it only gets worse)</button>
-    </div>
+    <button class="btn btn-primary" onclick="startGame()">Play again (it only gets worse)</button>
   </div>
-</div>
 
 </div>
 <script>
-const categories = [
+const CATS = [
   { name: "Big Oil & Climate Lies", short: "Big Oil" },
   { name: "Tech Bros Behaving Badly", short: "Big Tech" },
   { name: "Financial Crimes & Vibes", short: "Finance" },
@@ -138,116 +145,103 @@ const categories = [
   { name: "Toxic Legacies", short: "Toxic" }
 ];
 
-const rawQuestions = [
+const RAW = [
   [
-    { points: 200, clue: "In 1989, this company's tanker captain allegedly had a drinking problem and the ship had a broken radar — details the company knew about. The resulting spill dumped 11 million gallons of oil off Alaska. They then spent 19 years fighting the court damages.", correct: "ExxonMobil (Exxon Valdez)", wrong: ["BP (Deepwater Horizon)", "Shell (Nigeria Delta)", "Chevron (Ecuador)"], correctVerdict: "Correct! Exxon made $40 billion in profit the year after the spill. The punitive damages were eventually slashed from $5B to $507M. Justice!", wrongVerdict: "Nope! It was ExxonMobil. They made $40B in profit the year after the spill and still fought the damages for nearly two decades. Refreshing.", detail: "The Exxon Valdez disaster devastated Prince William Sound. ExxonMobil appealed punitive damages all the way to the Supreme Court, which obligingly cut them by 90%. The captain was acquitted of felony charges. The otters were not." },
-    { points: 400, clue: "This oil company's own scientists were predicting climate change with alarming accuracy back in 1977. The company's response? Spend the next four decades funding think tanks to convince you those scientists were wrong.", correct: "Exxon", wrong: ["Shell", "BP", "Halliburton"], correctVerdict: "Correct! Their scientists nailed the climate projections. The company responded by hiring lobbyists instead of listening to them.", wrongVerdict: "Nope — it was Exxon. Their internal scientists were basically writing the IPCC report in the 1970s. Exxon responded by funding doubt.", detail: "Exxon's internal research on climate change was uncovered by journalists in 2015. The company had predicted global warming with striking accuracy — and then spent millions sowing confusion about it. The scientists were right. The lobbyists were paid." },
-    { points: 600, clue: "This company's 2010 blowout killed 11 workers and dumped 4.9 million barrels of oil into the Gulf of Mexico. Its CEO responded by saying he 'wanted his life back.' He then attended a yacht race.", correct: "BP / Tony Hayward", wrong: ["ExxonMobil / Rex Tillerson", "Shell / Ben van Beurden", "Chevron / John Watson"], correctVerdict: "Correct! Tony Hayward was replaced shortly after the yacht race. He reportedly remains unaware of the irony.", wrongVerdict: "It was BP's Tony Hayward — a man who attended a yacht race while the Gulf coast was destroyed and somehow thought this was fine.", detail: "BP's Deepwater Horizon disaster resulted in $65B+ in costs. Hayward's 'I want my life back' comment, made while families of the dead were grieving, is one of the all-time PR disasters. He later joined the board of a Russian oil company." },
-    { points: 800, clue: "After this country won a $9.5 billion environmental lawsuit against Chevron for Amazon contamination, Chevron's response was to personally destroy the plaintiffs' lawyer through US courts rather than, say, pay.", correct: "Ecuador", wrong: ["Nigeria", "Venezuela", "Bolivia"], correctVerdict: "Correct! Chevron had no assets in Ecuador so they couldn't be forced to pay. Instead they went after attorney Steven Donziger personally for years. The rainforest is still contaminated.", wrongVerdict: "It was Ecuador. Chevron dumped billions of gallons of toxic waste there, lost the lawsuit, then pursued the plaintiffs' lawyer for decades instead of paying. Very normal behavior.", detail: "The Chevron-Ecuador saga is one of the most Byzantine legal battles in history. Chevron refused to pay and pursued attorney Steven Donziger through US courts for nearly a decade. He spent 993 days under house arrest. The contamination remains." },
-    { points: 1000, clue: "This fossil fuel industry trade group published a 1998 internal memo outlining a $2 million campaign with the stated goal of making 'average citizens' doubt climate science consensus. The memo was leaked. They kept running the campaign.", correct: "American Petroleum Institute", wrong: ["US Chamber of Commerce", "Global Climate Coalition", "Koch Industries"], correctVerdict: "Correct! The API memo explicitly said 'victory will be achieved' when doubt is widespread. Decades later: mission accomplished?", wrongVerdict: "It was the American Petroleum Institute. Their 1998 memo was a PR strategy disguised as a policy paper. It worked brilliantly on a large portion of the population.", detail: "The API's 'Global Climate Science Communications Plan' memo outlined how to target teachers, journalists, and politicians to spread doubt about climate science. It was a playbook, not a science paper." }
+    { points:200, clue:"In 1989, this company's tanker captain allegedly had a drinking problem and the ship had a broken radar — details the company knew about. The resulting spill dumped 11 million gallons of oil off Alaska. They then spent 19 years fighting the court damages.", correct:"ExxonMobil (Exxon Valdez)", wrong:["BP (Deepwater Horizon)","Shell (Nigeria Delta)","Chevron (Ecuador)"], cv:"Correct! Exxon made $40 billion in profit the year after the spill. The punitive damages were eventually slashed from $5B to $507M. Justice!", wv:"Nope! It was ExxonMobil. They made $40B in profit the year after the spill and still fought the damages for nearly two decades. Refreshing.", detail:"The Exxon Valdez disaster devastated Prince William Sound. ExxonMobil appealed punitive damages all the way to the Supreme Court, which obligingly cut them by 90%. The captain was acquitted of felony charges. The otters were not." },
+    { points:400, clue:"This oil company's own scientists were predicting climate change with alarming accuracy back in 1977. The company's response? Spend the next four decades funding think tanks to convince you those scientists were wrong.", correct:"Exxon", wrong:["Shell","BP","Halliburton"], cv:"Correct! Their scientists nailed the climate projections. The company responded by hiring lobbyists instead of listening to them.", wv:"Nope — it was Exxon. Their internal scientists were basically writing the IPCC report in the 1970s. Exxon responded by funding doubt.", detail:"Exxon's internal research on climate change was uncovered by journalists in 2015. The company had predicted global warming with striking accuracy — and then spent millions sowing confusion about it. The scientists were right. The lobbyists were paid." },
+    { points:600, clue:"This company's 2010 blowout killed 11 workers and dumped 4.9 million barrels of oil into the Gulf of Mexico. Its CEO responded by saying he 'wanted his life back.' He then attended a yacht race.", correct:"BP / Tony Hayward", wrong:["ExxonMobil / Rex Tillerson","Shell / Ben van Beurden","Chevron / John Watson"], cv:"Correct! Tony Hayward was replaced shortly after the yacht race. He reportedly remains unaware of the irony.", wv:"It was BP's Tony Hayward — a man who attended a yacht race while the Gulf coast was destroyed and somehow thought this was fine.", detail:"BP's Deepwater Horizon disaster resulted in $65B+ in costs. Hayward's 'I want my life back' comment, made while families of the dead were grieving, is one of the all-time PR disasters. He later joined the board of a Russian oil company." },
+    { points:800, clue:"After this country won a $9.5 billion environmental lawsuit against Chevron for Amazon contamination, Chevron's response was to personally destroy the plaintiffs' lawyer through US courts rather than, say, pay.", correct:"Ecuador", wrong:["Nigeria","Venezuela","Bolivia"], cv:"Correct! Chevron had no assets in Ecuador so they couldn't be forced to pay. Instead they went after attorney Steven Donziger personally for years. The rainforest is still contaminated.", wv:"It was Ecuador. Chevron dumped billions of gallons of toxic waste there, lost the lawsuit, then pursued the plaintiffs' lawyer for decades instead of paying. Very normal behavior.", detail:"The Chevron-Ecuador saga is one of the most Byzantine legal battles in history. Chevron refused to pay and pursued attorney Steven Donziger through US courts for nearly a decade. He spent 993 days under house arrest. The contamination remains." },
+    { points:1000, clue:"This fossil fuel industry trade group published a 1998 internal memo outlining a $2 million campaign with the stated goal of making 'average citizens' doubt climate science consensus. The memo was leaked. They kept running the campaign.", correct:"American Petroleum Institute", wrong:["US Chamber of Commerce","Global Climate Coalition","Koch Industries"], cv:"Correct! The API memo explicitly said 'victory will be achieved' when doubt is widespread. Decades later: mission accomplished?", wv:"It was the American Petroleum Institute. Their 1998 memo was a PR strategy disguised as a policy paper. It worked brilliantly on a large portion of the population.", detail:"The API's 'Global Climate Science Communications Plan' memo outlined how to target teachers, journalists, and politicians to spread doubt about climate science. It was a playbook, not a science paper." }
   ],
   [
-    { points: 200, clue: "This company paid a record $5 billion FTC fine in 2019 for sharing 87 million users' data without consent. They made the money back in about six weeks. The CEO's personal net worth was unaffected.", correct: "Facebook / Cambridge Analytica scandal", wrong: ["Google / DoubleClick merger", "Twitter / Dataminr deal", "Yahoo / 2016 data breach"], correctVerdict: "Correct! $5 billion sounds enormous until you realize it was basically a rounding error for Facebook at the time.", wrongVerdict: "It was Facebook. $5 billion fine, six weeks to earn it back, zero consequences for leadership. The FTC really showed them.", detail: "Cambridge Analytica harvested Facebook data from 87 million profiles via a quiz app. The $5B fine remains the largest ever levied by the FTC, which sounds impressive until you do the per-user math: about $57 per person whose data was misused." },
-    { points: 400, clue: "This company was fined $887 million by the EU for using third-party seller data to give its own products an unfair advantage. The sellers had no idea their sales numbers were being used as a free product research lab.", correct: "Amazon", wrong: ["Alibaba", "eBay", "Shopify"], correctVerdict: "Correct! Amazon's marketplace was essentially charging sellers to help Amazon figure out what to sell in competition with them. Genius, if you squint past the part where it's illegal.", wrongVerdict: "It was Amazon. They used seller data to develop their own competing products, then ranked those products above the sellers'. Then got fined $887M. Then kept doing it.", detail: "Amazon's self-preferencing scandal revealed the company was mining third-party seller data to inform its Amazon Basics product line, then algorithmically ranking those products above the original sellers'." },
-    { points: 600, clue: "This CEO began selling roughly $128 million per week of his own company stock in August 2021. The very next month, internal documents leaked showing the company knew its products were psychologically harming teenage girls.", correct: "Mark Zuckerberg / Meta", wrong: ["Elon Musk / Tesla", "Jeff Bezos / Amazon", "Jack Dorsey / Twitter"], correctVerdict: "Correct! The timing of those stock sales raised some extremely interesting questions that were never formally answered.", wrongVerdict: "It was Mark Zuckerberg. He sold $7.9B in stock in August 2021. The Facebook Files dropped in September 2021. The SEC investigation that followed was... mild.", detail: "The Wall Street Journal's Facebook Files showed internal research proving Instagram worsened body image issues in teenage girls — research the company had suppressed. Zuckerberg's stock sales in the weeks prior were flagged by consumer advocates." },
-    { points: 800, clue: "This company built a tool called 'Greyball' that detected when app users were likely to be regulators or law enforcement — and then showed them a fake version of the app where no cars ever arrived.", correct: "Uber", wrong: ["Lyft", "DoorDash", "Grab"], correctVerdict: "Correct! Uber told regulators Greyball was a 'fraud detection tool.' This was technically true in the sense that it was used to commit fraud and detect that it was working.", wrongVerdict: "It was Uber. They built an entire software system specifically to deceive law enforcement. They called it fraud prevention, which, linguistically, is impressive.", detail: "Greyball identified suspicious users — those near government buildings, those with certain credit card types — and showed them ghost cars. The DOJ investigated. Uber settled. Travis Kalanick eventually resigned for unrelated reasons, also bad." },
-    { points: 1000, clue: "Google was hit with a €4.34 billion antitrust fine in 2018 for requiring phone makers to pre-install certain apps as a condition of accessing the Play Store. The EU called it an abuse of dominance. Google called it 'helping users.'", correct: "Google (Android pre-install mandate)", wrong: ["Apple (App Store exclusivity)", "Microsoft (Internet Explorer bundling)", "Meta (WhatsApp acquisition conditions)"], correctVerdict: "Correct! Google's defense was essentially that pre-installing their apps was good for consumers. The EU disagreed, at length, in a 792-page decision.", wrongVerdict: "It was Google's Android pre-install policy. The fine was €4.34B. Google appealed. The fine was upheld. Google earned it back in roughly three days.", detail: "Google required Android manufacturers to pre-install Google Search and Chrome as conditions for licensing the Play Store. The EU's finding ran 792 pages. The fine was ultimately reduced slightly to €4.125B on appeal." }
+    { points:200, clue:"This company paid a record $5 billion FTC fine in 2019 for sharing 87 million users' data without consent. They made the money back in about six weeks. The CEO's personal net worth was unaffected.", correct:"Facebook / Cambridge Analytica scandal", wrong:["Google / DoubleClick merger","Twitter / Dataminr deal","Yahoo / 2016 data breach"], cv:"Correct! $5 billion sounds enormous until you realize it was basically a rounding error for Facebook at the time.", wv:"It was Facebook. $5 billion fine, six weeks to earn it back, zero consequences for leadership. The FTC really showed them.", detail:"Cambridge Analytica harvested Facebook data from 87 million profiles via a quiz app. The $5B fine remains the largest ever levied by the FTC, which sounds impressive until you do the per-user math: about $57 per person whose data was misused." },
+    { points:400, clue:"This company was fined $887 million by the EU for using third-party seller data to give its own products an unfair advantage. The sellers had no idea their sales numbers were being used as a free product research lab.", correct:"Amazon", wrong:["Alibaba","eBay","Shopify"], cv:"Correct! Amazon's marketplace was essentially charging sellers to help Amazon figure out what to sell in competition with them. Genius, if you squint past the part where it's illegal.", wv:"It was Amazon. They used seller data to develop their own competing products, then ranked those products above the sellers'. Then got fined $887M. Then kept doing it.", detail:"Amazon's self-preferencing scandal revealed the company was mining third-party seller data to inform its Amazon Basics product line, then algorithmically ranking those products above the original sellers'." },
+    { points:600, clue:"This CEO began selling roughly $128 million per week of his own company stock in August 2021. The very next month, internal documents leaked showing the company knew its products were psychologically harming teenage girls.", correct:"Mark Zuckerberg / Meta", wrong:["Elon Musk / Tesla","Jeff Bezos / Amazon","Jack Dorsey / Twitter"], cv:"Correct! The timing of those stock sales raised some extremely interesting questions that were never formally answered.", wv:"It was Mark Zuckerberg. He sold $7.9B in stock in August 2021. The Facebook Files dropped in September 2021. The SEC investigation that followed was... mild.", detail:"The Wall Street Journal's Facebook Files showed internal research proving Instagram worsened body image issues in teenage girls — research the company had suppressed. Zuckerberg's stock sales in the weeks prior were flagged by consumer advocates." },
+    { points:800, clue:"This company built a tool called 'Greyball' that detected when app users were likely to be regulators or law enforcement — and then showed them a fake version of the app where no cars ever arrived.", correct:"Uber", wrong:["Lyft","DoorDash","Grab"], cv:"Correct! Uber told regulators Greyball was a 'fraud detection tool.' This was technically true in the sense that it was used to commit fraud and detect that it was working.", wv:"It was Uber. They built an entire software system specifically to deceive law enforcement. They called it fraud prevention, which, linguistically, is impressive.", detail:"Greyball identified suspicious users — those near government buildings, those with certain credit card types — and showed them ghost cars. The DOJ investigated. Uber settled. Travis Kalanick eventually resigned for unrelated reasons, also bad." },
+    { points:1000, clue:"Google was hit with a \u20ac4.34 billion antitrust fine in 2018 for requiring phone makers to pre-install certain apps as a condition of accessing the Play Store. The EU called it an abuse of dominance. Google called it 'helping users.'", correct:"Google (Android pre-install mandate)", wrong:["Apple (App Store exclusivity)","Microsoft (Internet Explorer bundling)","Meta (WhatsApp acquisition conditions)"], cv:"Correct! Google's defense was essentially that pre-installing their apps was good for consumers. The EU disagreed, at length, in a 792-page decision.", wv:"It was Google's Android pre-install policy. The fine was \u20ac4.34B. Google appealed. The fine was upheld. Google earned it back in roughly three days.", detail:"Google required Android manufacturers to pre-install Google Search and Chrome as conditions for licensing the Play Store. The EU's finding ran 792 pages. The fine was ultimately reduced slightly to \u20ac4.125B on appeal." }
   ],
   [
-    { points: 200, clue: "This energy company hid $1.2 billion in debt using thousands of shell entities, paid out hundreds of millions in executive bonuses before its collapse, and became synonymous with corporate fraud. Its logo was a tilted 'E.' Make of that what you will.", correct: "Enron", wrong: ["WorldCom", "Tyco International", "Adelphia Communications"], correctVerdict: "Correct! The 'smartest guys in the room' turned out to be running a massive accounting fiction. 20,000 employees lost their jobs and pensions.", wrongVerdict: "It was Enron — the granddaddy of modern corporate fraud. CEO Ken Lay died before sentencing. The tilted E logo really was ominous in retrospect.", detail: "Enron used special purpose entities to keep debt off its balance sheets and reported profits that didn't exist. When it collapsed in 2001, it was the largest bankruptcy in US history. Accounting firm Arthur Andersen also collapsed in the fallout." },
-    { points: 400, clue: "Between 2002 and 2016, this bank's employees quietly opened 3.5 million fake accounts in customers' names to hit sales quotas. One employee who reported it to the ethics hotline was fired the next day. The CEO kept his job for another year.", correct: "Wells Fargo", wrong: ["Bank of America", "JPMorgan Chase", "Citigroup"], correctVerdict: "Correct! CEO John Stumpf eventually resigned with a $130 million exit package. The employees who committed fraud to keep their jobs were fired.", wrongVerdict: "It was Wells Fargo. The ethics hotline tips were allegedly passed to managers, who fired the reporters. 5,300 low-level employees were eventually fired. Stumpf left with $130M.", detail: "The Wells Fargo scandal revealed a sales culture so toxic that employees opened fake accounts in customers' names — sometimes transferring funds without permission. Customers paid fees on accounts they didn't know existed. It ran for 14 years." },
-    { points: 600, clue: "This pharma CEO raised the price of a 62-year-old drug from $13.50 to $750 per pill overnight — a 5,455% increase. He then bought the Wu-Tang Clan's secret album for $2 million and livestreamed himself playing chess online while Congress investigated him.", correct: "Martin Shkreli / Turing Pharmaceuticals", wrong: ["Richard Sackler / Purdue Pharma", "John Kapoor / Insys Therapeutics", "Alex Azar / Eli Lilly"], correctVerdict: "Correct! He is not in jail for the price hike (still legal!). He's in jail for securities fraud. The Wu-Tang album was seized and auctioned off. It went to Pharma Bro.", wrongVerdict: "Martin Shkreli. He livestreamed himself playing chess while Congress investigated. He was eventually jailed — but for hedge fund fraud, not the pricing. Drug price gouging remains legal.", detail: "Daraprim treats a parasitic infection that can be fatal in immunocompromised patients. Shkreli bought the rights and immediately 5,455%'d the price. He called Congress members 'imbeciles.' He served about two years in prison." },
-    { points: 800, clue: "This investment bank privately referred to one of its mortgage products as 'a shitty deal' and 'Frankenstein's monster' in internal emails — while selling it to clients. They also bet against it. They were fined $550M and no one went to jail.", correct: "Goldman Sachs (Abacus CDO)", wrong: ["Lehman Brothers (mortgage securities)", "Bear Stearns (hedge funds)", "Countrywide Financial (subprime loans)"], correctVerdict: "Correct! Goldman called it a shitty deal, sold it anyway, shorted it, made billions, paid a fine, and continued existing. The 2008 financial crisis followed.", wrongVerdict: "It was Goldman Sachs and the Abacus CDO — assembled with help from a hedge fund that chose the worst-performing mortgages, which Goldman sold to clients without mentioning the conflict.", detail: "The Abacus deal was constructed with Paulson & Co., who selected underperforming mortgages, then bet against them. Goldman sold the CDO to clients. When it collapsed, Paulson made $1B. Goldman paid $550M to settle. No criminal charges." },
-    { points: 1000, clue: "This crypto exchange reached a $32 billion valuation, had a Super Bowl ad, sponsored a sports arena, and had a CEO who publicly championed 'effective altruism.' It collapsed in 72 hours when someone noticed the balance sheet. The CEO was arrested in the Bahamas.", correct: "FTX / Sam Bankman-Fried", wrong: ["Celsius / Alex Mashinsky", "Terraform Labs / Do Kwon", "Three Arrows Capital / Su Zhu"], correctVerdict: "Correct! SBF was found guilty on all 7 counts and sentenced to 25 years. Several politicians who received his donations returned the money, awkwardly.", wrongVerdict: "It was FTX and Sam Bankman-Fried, who built a $32B valuation while secretly using customer funds for his trading firm's bets. Convicted on 7 counts. Sentenced to 25 years.", detail: "FTX was secretly funneling customer deposits to Alameda Research, which had been hemorrhaging money on bad bets. When CoinDesk published a story about Alameda's balance sheet, the whole thing collapsed in days. SBF's parents, both Stanford law professors, said they were proud of him." }
+    { points:200, clue:"This energy company hid $1.2 billion in debt using thousands of shell entities, paid out hundreds of millions in executive bonuses before its collapse, and became synonymous with corporate fraud. Its logo was a tilted 'E.' Make of that what you will.", correct:"Enron", wrong:["WorldCom","Tyco International","Adelphia Communications"], cv:"Correct! The 'smartest guys in the room' turned out to be running a massive accounting fiction. 20,000 employees lost their jobs and pensions.", wv:"It was Enron — the granddaddy of modern corporate fraud. CEO Ken Lay died before sentencing. The tilted E logo really was ominous in retrospect.", detail:"Enron used special purpose entities to keep debt off its balance sheets and reported profits that didn't exist. When it collapsed in 2001, it was the largest bankruptcy in US history. Accounting firm Arthur Andersen also collapsed in the fallout." },
+    { points:400, clue:"Between 2002 and 2016, this bank's employees quietly opened 3.5 million fake accounts in customers' names to hit sales quotas. One employee who reported it to the ethics hotline was fired the next day. The CEO kept his job for another year.", correct:"Wells Fargo", wrong:["Bank of America","JPMorgan Chase","Citigroup"], cv:"Correct! CEO John Stumpf eventually resigned with a $130 million exit package. The employees who committed fraud to keep their jobs were fired.", wv:"It was Wells Fargo. The ethics hotline tips were allegedly passed to managers, who fired the reporters. 5,300 low-level employees were eventually fired. Stumpf left with $130M.", detail:"The Wells Fargo scandal revealed a sales culture so toxic that employees opened fake accounts in customers' names — sometimes transferring funds without permission. Customers paid fees on accounts they didn't know existed. It ran for 14 years." },
+    { points:600, clue:"This pharma CEO raised the price of a 62-year-old drug from $13.50 to $750 per pill overnight — a 5,455% increase. He then bought the Wu-Tang Clan's secret album for $2 million and livestreamed himself playing chess online while Congress investigated him.", correct:"Martin Shkreli / Turing Pharmaceuticals", wrong:["Richard Sackler / Purdue Pharma","John Kapoor / Insys Therapeutics","Alex Azar / Eli Lilly"], cv:"Correct! He is not in jail for the price hike (still legal!). He's in jail for securities fraud. The Wu-Tang album was seized and auctioned. It went to Pharma Bro.", wv:"Martin Shkreli. He livestreamed himself playing chess while Congress investigated. He was jailed — but for hedge fund fraud, not pricing. Drug price gouging remains legal.", detail:"Daraprim treats a parasitic infection that can be fatal in immunocompromised patients. Shkreli bought the rights and immediately 5,455%'d the price. He called Congress members 'imbeciles.' He served about two years in prison." },
+    { points:800, clue:"This investment bank privately referred to one of its mortgage products as 'a shitty deal' and 'Frankenstein's monster' in internal emails — while selling it to clients. They also bet against it. They were fined $550M and no one went to jail.", correct:"Goldman Sachs (Abacus CDO)", wrong:["Lehman Brothers (mortgage securities)","Bear Stearns (hedge funds)","Countrywide Financial (subprime loans)"], cv:"Correct! Goldman called it a shitty deal, sold it anyway, shorted it, made billions, paid a fine, and continued existing. The 2008 financial crisis followed.", wv:"It was Goldman Sachs and the Abacus CDO — assembled with a hedge fund that chose the worst-performing mortgages, which Goldman sold to clients without mentioning the conflict.", detail:"The Abacus deal was constructed with Paulson & Co., who selected underperforming mortgages, then bet against them. Goldman sold the CDO to clients. When it collapsed, Paulson made $1B. Goldman paid $550M to settle. No criminal charges." },
+    { points:1000, clue:"This crypto exchange reached a $32 billion valuation, had a Super Bowl ad, sponsored a sports arena, and had a CEO who publicly championed 'effective altruism.' It collapsed in 72 hours when someone noticed the balance sheet. The CEO was arrested in the Bahamas.", correct:"FTX / Sam Bankman-Fried", wrong:["Celsius / Alex Mashinsky","Terraform Labs / Do Kwon","Three Arrows Capital / Su Zhu"], cv:"Correct! SBF was found guilty on all 7 counts and sentenced to 25 years. Several politicians who received his donations returned the money, awkwardly.", wv:"It was FTX and Sam Bankman-Fried, who built a $32B valuation while secretly using customer funds for his trading firm's bets. Convicted on 7 counts. Sentenced to 25 years.", detail:"FTX was secretly funneling customer deposits to Alameda Research, which had been hemorrhaging money on bad bets. When CoinDesk published a story about Alameda's balance sheet, the whole thing collapsed in days. SBF's parents, both Stanford law professors, said they were proud of him." }
   ],
   [
-    { points: 200, clue: "Amazon was caught in 2020 using the Pinkerton detective agency to spy on warehouse workers organizing for better conditions. The Pinkertons were also the ones hired to violently suppress steel workers in 1892. Progress!", correct: "Amazon", wrong: ["Walmart", "Tesla", "Starbucks"], correctVerdict: "Correct! Hiring the Pinkertons to union-bust in 2020 is like hiring a cholera doctor to treat your cold — technically professional, historically horrifying.", wrongVerdict: "It was Amazon. The Pinkertons killed workers in the 1892 Homestead Strike. Amazon hired them in 2020 to monitor 'labor organizing threats.' The agency's website does not mention the massacre.", detail: "Vice's 2020 investigation revealed Amazon had paid Pinkerton operatives to infiltrate warehouse worker groups and report on organizing activity. Amazon also ran an extensive social media monitoring program targeting union-related keywords." },
-    { points: 400, clue: "Uber, Lyft, DoorDash, and Instacart spent $200 million — the most expensive ballot campaign in California history — to pass Prop 22, which made gig worker contractor classification permanent. A court later ruled Prop 22 was unconstitutional. The companies are appealing.", correct: "Prop 22 / Gig worker classification fight", wrong: ["Prop 13 / Property tax freeze", "AB5 / Independent contractor law", "Prop 47 / Criminal sentencing reform"], correctVerdict: "Correct! $200 million to avoid paying benefits to drivers. The math works out if you're the company.", wrongVerdict: "It was Prop 22 — the $200M gig economy ballot measure. It passed. A court struck it down. The companies appealed. The drivers are still independent contractors while we wait.", detail: "The gig companies argued that drivers preferred flexibility over benefits. Worker surveys suggested otherwise. The $200M campaign included in-app messages pushing drivers and customers to vote yes. The legal battle continues." },
-    { points: 600, clue: "Between 2021 and 2023, this coffee company racked up more NLRB violations than any other company in the country — over 500 charges — for firing union organizers and closing stores immediately after successful union votes.", correct: "Starbucks", wrong: ["McDonald's", "Amazon", "Apple retail"], correctVerdict: "Correct! Howard Schultz testified before Congress about the union-busting. He called Starbucks workers 'partners.' The NLRB called the closures illegal.", wrongVerdict: "It was Starbucks — 500+ labor violations in two years. Howard Schultz testified before Congress and called Starbucks workers 'partners.' Congress mostly used other words.", detail: "The Starbucks union wave began in Buffalo, NY in 2021 and spread to hundreds of stores. The company responded by holding mandatory anti-union meetings and closing stores after union votes. Multiple rulings found Starbucks violated labor law." },
-    { points: 800, clue: "Black and Latino workers at this EV company's California factory documented a 'no-Spanish' rule on the floor, widespread racial slurs, and the use of gang databases to track Latino workers who tried to organize. A jury awarded one worker $137 million.", correct: "Tesla", wrong: ["Rivian", "Ford (EV plant)", "General Motors"], correctVerdict: "Correct! The $137M verdict was later reduced to $3.2M on appeal. Tesla said the worker's claims were 'inconsistent.' Multiple other similar lawsuits remain ongoing.", wrongVerdict: "It was Tesla. The NLRB separately found Tesla had illegally banned workers from discussing wages and wearing union shirts. Elon Musk tweeted about it.", detail: "Owen Diaz's lawsuit detailed extensive racial harassment on Tesla's Fremont floor. The original $137M verdict was the largest individual employment discrimination verdict in California history. A judge later reduced it; an appeals court reduced it further. Dozens of similar suits are pending." },
-    { points: 1000, clue: "In April 2022, warehouse workers at this company's Staten Island facility voted to unionize — the first successful Amazon union in US history — despite Amazon spending $4.3 million on consultants trying to stop them. The lead organizer had been fired by Amazon the previous year.", correct: "Amazon Labor Union / JFK8 (Staten Island)", wrong: ["Amazon BHM1 (Bessemer, Alabama)", "Amazon DEN7 (Denver, Colorado)", "Amazon MDW2 (Chicago, Illinois)"], correctVerdict: "Correct! Chris Smalls, fired by Amazon after organizing a 2020 walkout, turned around and unionized an 8,325-person facility. Amazon reportedly called him 'not smart or articulate.' He then unionized their warehouse.", wrongVerdict: "It was JFK8 in Staten Island, led by Chris Smalls, whom Amazon had reportedly called 'not smart or articulate' after firing him. He then organized a union in one of their largest facilities. Irony, delivered same-day.", detail: "The Amazon Labor Union, formed by fired Amazon worker Chris Smalls with a $120,000 GoFundMe budget, beat Amazon's $4.3M anti-union campaign in April 2022. Amazon filed 65 objections. All were dismissed." }
+    { points:200, clue:"Amazon was caught in 2020 using the Pinkerton detective agency to spy on warehouse workers organizing for better conditions. The Pinkertons were also the ones hired to violently suppress steel workers in 1892. Progress!", correct:"Amazon", wrong:["Walmart","Tesla","Starbucks"], cv:"Correct! Hiring the Pinkertons to union-bust in 2020 is like hiring a cholera doctor to treat your cold — technically professional, historically horrifying.", wv:"It was Amazon. The Pinkertons killed workers in the 1892 Homestead Strike. Amazon hired them in 2020 to monitor 'labor organizing threats.' The agency's website does not mention the massacre.", detail:"Vice's 2020 investigation revealed Amazon had paid Pinkerton operatives to infiltrate warehouse worker groups and report on organizing activity. Amazon also ran an extensive social media monitoring program targeting union-related keywords." },
+    { points:400, clue:"Uber, Lyft, DoorDash, and Instacart spent $200 million — the most expensive ballot campaign in California history — to pass Prop 22, which made gig worker contractor classification permanent. A court later ruled Prop 22 was unconstitutional. The companies are appealing.", correct:"Prop 22 / Gig worker classification fight", wrong:["Prop 13 / Property tax freeze","AB5 / Independent contractor law","Prop 47 / Criminal sentencing reform"], cv:"Correct! $200 million to avoid paying benefits to drivers. The math works out if you're the company.", wv:"It was Prop 22 — the $200M gig economy ballot measure. It passed. A court struck it down. The companies appealed. The drivers are still independent contractors while we wait.", detail:"The gig companies argued that drivers preferred flexibility over benefits. Worker surveys suggested otherwise. The $200M campaign included in-app messages pushing drivers and customers to vote yes. The legal battle continues." },
+    { points:600, clue:"Between 2021 and 2023, this coffee company racked up more NLRB violations than any other company in the country — over 500 charges — for firing union organizers and closing stores immediately after successful union votes.", correct:"Starbucks", wrong:["McDonald's","Amazon","Apple retail"], cv:"Correct! Howard Schultz testified before Congress about the union-busting. He called Starbucks workers 'partners.' The NLRB called the closures illegal.", wv:"It was Starbucks — 500+ labor violations in two years. Howard Schultz testified before Congress and called workers 'partners.' Congress mostly used other words.", detail:"The Starbucks union wave began in Buffalo, NY in 2021 and spread to hundreds of stores. The company responded by holding mandatory anti-union meetings and closing stores after union votes. Multiple rulings found Starbucks violated labor law." },
+    { points:800, clue:"Black and Latino workers at this EV company's California factory documented a 'no-Spanish' rule on the floor, widespread racial slurs, and the use of gang databases to track Latino workers who tried to organize. A jury awarded one worker $137 million.", correct:"Tesla", wrong:["Rivian","Ford (EV plant)","General Motors"], cv:"Correct! The $137M verdict was later reduced to $3.2M on appeal. Tesla said the worker's claims were 'inconsistent.' Multiple other similar lawsuits remain ongoing.", wv:"It was Tesla. The NLRB separately found Tesla had illegally banned workers from discussing wages and wearing union shirts. Elon Musk tweeted about it.", detail:"Owen Diaz's lawsuit detailed extensive racial harassment on Tesla's Fremont floor. The original $137M verdict was the largest individual employment discrimination verdict in California history. A judge later reduced it; an appeals court reduced it further. Dozens of similar suits are pending." },
+    { points:1000, clue:"In April 2022, warehouse workers at this company's Staten Island facility voted to unionize — the first successful Amazon union in US history — despite Amazon spending $4.3 million on consultants trying to stop them. The lead organizer had been fired by Amazon the previous year.", correct:"Amazon Labor Union / JFK8 (Staten Island)", wrong:["Amazon BHM1 (Bessemer, Alabama)","Amazon DEN7 (Denver, Colorado)","Amazon MDW2 (Chicago, Illinois)"], cv:"Correct! Chris Smalls, fired by Amazon after organizing a 2020 walkout, turned around and unionized an 8,325-person facility. Amazon reportedly called him 'not smart or articulate.' He then unionized their warehouse.", wv:"It was JFK8 in Staten Island, led by Chris Smalls, whom Amazon had reportedly called 'not smart or articulate' after firing him. He then organized a union in one of their largest facilities. Irony, delivered same-day.", detail:"The Amazon Labor Union, formed by fired Amazon worker Chris Smalls with a $120,000 GoFundMe budget, beat Amazon's $4.3M anti-union campaign in April 2022. Amazon filed 65 objections. All were dismissed." }
   ],
   [
-    { points: 200, clue: "This company's internal documents from the 1970s showed scientists knew their baby powder was contaminated with asbestos. The company kept selling it for another 50 years. They have now filed for bankruptcy twice using a strategy specifically designed to limit payouts to cancer patients.", correct: "Johnson & Johnson", wrong: ["Procter & Gamble", "Colgate-Palmolive", "Kimberly-Clark"], correctVerdict: "Correct! The 'Texas Two-Step' involves spinning off your liabilities into a subsidiary and bankrupting that subsidiary. The Supreme Court has opinions about this.", wrongVerdict: "Johnson & Johnson. They used a legal maneuver called the 'Texas Two-Step' — creating a subsidiary to hold the asbestos liabilities and bankrupting it. Courts have been mixed on whether this is allowed.", detail: "J&J's internal documents flagged asbestos contamination in talc products as far back as the 1970s. 40,000 lawsuits and $8.9B in settlements later, the company pivoted to the Texas Two-Step bankruptcy strategy. Baby powder was quietly discontinued in North America in 2020." },
-    { points: 400, clue: "This agrochemical giant — now owned by a German pharmaceutical company that paid $63 billion for it — manufactured the world's most popular herbicide, which courts found causes cancer. Internal emails showed the company ghostwriting scientific papers. The acquirer has lost billions in lawsuits so far.", correct: "Monsanto / Bayer (Roundup)", wrong: ["Dow Chemical / DowDuPont (Agent Orange)", "Syngenta / ChemChina (Paraquat)", "BASF (glufosinate)"], correctVerdict: "Correct! Bayer paid $63B for Monsanto in 2018 and immediately inherited a cancer lawsuit time bomb. Analysts called it 'one of the worst acquisitions in recent memory.' They were right.", wrongVerdict: "Monsanto, now owned by Bayer. Bayer's shareholders sued Bayer's own board for completing the acquisition despite warnings about the litigation exposure. The board lost that case too.", detail: "Glyphosate (Roundup) was classified as a 'probable carcinogen' by the WHO's IARC in 2015. Monsanto's internal emails showed the company writing scientific papers and finding academics to put their names on them. Bayer agreed to pay $10.9B to settle 125,000 cases." },
-    { points: 600, clue: "This company manufactured chemicals called 'forever chemicals' for decades. Their own scientists found them accumulating in human blood in the 1970s. The company kept making them. In 2023 they paid $10.3 billion to settle with US water utilities — 47 years after the internal blood study.", correct: "3M (PFAS / forever chemicals)", wrong: ["DuPont (Teflon / C8)", "Chemours (GenX chemicals)", "Honeywell (PFAS in firefighting foam)"], correctVerdict: "Correct! 47 years between 'our scientists found this in blood' and 'okay fine we'll pay.' 3M has announced it will stop producing PFAS by end of 2025.", wrongVerdict: "It was 3M — though DuPont is also deeply guilty on PFAS. 3M's internal research from the 1970s showed PFAS accumulating in human blood. The $10.3B settlement came 47 years later.", detail: "PFAS chemicals appear in non-stick cookware, food packaging, and firefighting foam. They don't break down in the environment or in human bodies. 3M suppressed their own findings. PFAS are now detectable in virtually every American's blood, as well as in rainwater samples from Antarctica." },
-    { points: 800, clue: "This family used their pharmaceutical company to pay doctors kickbacks for prescribing highly addictive opioids, knowing the addiction potential while marketing them as low-risk. The resulting crisis killed over 500,000 Americans. Family members moved billions offshore before settlements were finalized.", correct: "The Sackler Family / Purdue Pharma", wrong: ["The Shultz Family / Theranos", "The Kapoor Family / Insys Therapeutics", "The Turner Family / Mallinckrodt"], correctVerdict: "Correct! The Sackler family paid over $6B in settlements. The Supreme Court struck down the deal that would have given family members immunity. The family retains billions.", wrongVerdict: "The Sackler family and Purdue Pharma. OxyContin was marketed with a claimed 'less than 1% addiction rate' — a claim Purdue knew was false. The family retains billions in offshore accounts.", detail: "Purdue Pharma pled guilty to federal criminal charges in 2020 and 2022. The Sacklers paid $6B+ but initially negotiated sweeping immunity from civil suits through bankruptcy — a deal the Supreme Court struck down in 2024." },
-    { points: 1000, clue: "This company spent 40 years dumping PCBs into the town of Anniston, Alabama — contaminating the soil, the creek, and nearly every resident's blood. An internal memo read: 'We can try to suppress [the studies]... Suppression is most desirable.' Reader, they suppressed.", correct: "Monsanto (Anniston PCB contamination)", wrong: ["General Electric (Hudson River PCBs)", "Westinghouse (Bloomington, Indiana PCBs)", "Union Carbide (Bhopal disaster)"], correctVerdict: "Correct! Monsanto chose suppression for 40 years. In 2003 they settled for $700M. Almost everyone in Anniston had measurable PCB contamination.", wrongVerdict: "It was Monsanto in Anniston, Alabama. The internal memo explicitly weighed telling regulators against suppressing the evidence. They chose suppression. For 40 years.", detail: "Monsanto's Anniston plant manufactured PCBs from 1929 to 1971. Fish in local streams died within 10 seconds of being placed in the water — a fact company employees documented and filed away. Residents weren't told until the 1990s." }
+    { points:200, clue:"This company's internal documents from the 1970s showed scientists knew their baby powder was contaminated with asbestos. The company kept selling it for another 50 years. They have now filed for bankruptcy twice using a strategy specifically designed to limit payouts to cancer patients.", correct:"Johnson & Johnson", wrong:["Procter & Gamble","Colgate-Palmolive","Kimberly-Clark"], cv:"Correct! The 'Texas Two-Step' involves spinning off your liabilities into a subsidiary and bankrupting that subsidiary. The Supreme Court has opinions about this.", wv:"Johnson & Johnson. They used a legal maneuver called the 'Texas Two-Step' — creating a subsidiary to hold the asbestos liabilities and bankrupting it. Courts have been mixed on whether this is allowed.", detail:"J&J's internal documents flagged asbestos contamination in talc products as far back as the 1970s. 40,000 lawsuits and $8.9B in settlements later, the company pivoted to the Texas Two-Step bankruptcy strategy. Baby powder was quietly discontinued in North America in 2020." },
+    { points:400, clue:"This agrochemical giant — now owned by a German pharmaceutical company that paid $63 billion for it — manufactured the world's most popular herbicide, which courts found causes cancer. Internal emails showed the company ghostwriting scientific papers. The acquirer has lost billions in lawsuits so far.", correct:"Monsanto / Bayer (Roundup)", wrong:["Dow Chemical / DowDuPont (Agent Orange)","Syngenta / ChemChina (Paraquat)","BASF (glufosinate)"], cv:"Correct! Bayer paid $63B for Monsanto in 2018 and immediately inherited a cancer lawsuit time bomb. Analysts called it 'one of the worst acquisitions in recent memory.' They were right.", wv:"Monsanto, now owned by Bayer. Bayer's shareholders sued Bayer's own board for completing the acquisition despite warnings about the litigation exposure. The board lost that case too.", detail:"Glyphosate (Roundup) was classified as a 'probable carcinogen' by the WHO's IARC in 2015. Monsanto's internal emails showed the company writing scientific papers and finding academics to put their names on them. Bayer agreed to pay $10.9B to settle 125,000 cases." },
+    { points:600, clue:"This company manufactured chemicals called 'forever chemicals' for decades. Their own scientists found them accumulating in human blood in the 1970s. The company kept making them. In 2023 they paid $10.3 billion to settle with US water utilities — 47 years after the internal blood study.", correct:"3M (PFAS / forever chemicals)", wrong:["DuPont (Teflon / C8)","Chemours (GenX chemicals)","Honeywell (PFAS in firefighting foam)"], cv:"Correct! 47 years between 'our scientists found this in blood' and 'okay fine we'll pay.' 3M has announced it will stop producing PFAS by end of 2025.", wv:"It was 3M — though DuPont is also deeply guilty on PFAS. 3M's internal research from the 1970s showed PFAS accumulating in human blood. The $10.3B settlement came 47 years later.", detail:"PFAS chemicals appear in non-stick cookware, food packaging, and firefighting foam. They don't break down in the environment or in human bodies. 3M suppressed their own findings. PFAS are now detectable in virtually every American's blood, as well as in rainwater samples from Antarctica." },
+    { points:800, clue:"This family used their pharmaceutical company to pay doctors kickbacks for prescribing highly addictive opioids, knowing the addiction potential while marketing them as low-risk. The resulting crisis killed over 500,000 Americans. Family members moved billions offshore before settlements were finalized.", correct:"The Sackler Family / Purdue Pharma", wrong:["The Shultz Family / Theranos","The Kapoor Family / Insys Therapeutics","The Turner Family / Mallinckrodt"], cv:"Correct! The Sackler family paid over $6B in settlements. The Supreme Court struck down the deal that would have given family members immunity. The family retains billions.", wv:"The Sackler family and Purdue Pharma. OxyContin was marketed with a claimed 'less than 1% addiction rate' — a claim Purdue knew was false. The family retains billions in offshore accounts.", detail:"Purdue Pharma pled guilty to federal criminal charges in 2020 and 2022. The Sacklers paid $6B+ but initially negotiated sweeping immunity from civil suits through bankruptcy — a deal the Supreme Court struck down in 2024." },
+    { points:1000, clue:"This company spent 40 years dumping PCBs into the town of Anniston, Alabama — contaminating the soil, the creek, and nearly every resident's blood. An internal memo read: 'We can try to suppress [the studies]... Suppression is most desirable.' Reader, they suppressed.", correct:"Monsanto (Anniston PCB contamination)", wrong:["General Electric (Hudson River PCBs)","Westinghouse (Bloomington, Indiana PCBs)","Union Carbide (Bhopal disaster)"], cv:"Correct! Monsanto chose suppression for 40 years. In 2003 they settled for $700M. Almost everyone in Anniston had measurable PCB contamination.", wv:"It was Monsanto in Anniston, Alabama. The internal memo explicitly weighed telling regulators against suppressing the evidence. They chose suppression. For 40 years.", detail:"Monsanto's Anniston plant manufactured PCBs from 1929 to 1971. Fish in local streams died within 10 seconds of being placed in the water — a fact company employees documented and filed away. Residents weren't told until the 1990s." }
   ]
 ];
 
-function shuffle(arr) {
-  const a = [...arr];
-  for (let i = a.length - 1; i > 0; i--) {
+function shuffle(a) {
+  const b = [...a];
+  for (let i = b.length - 1; i > 0; i--) {
     const j = Math.floor(Math.random() * (i + 1));
-    [a[i], a[j]] = [a[j], a[i]];
+    [b[i], b[j]] = [b[j], b[i]];
   }
-  return a;
+  return b;
 }
 
-function buildQuestions() {
-  return rawQuestions.map(cat => cat.map(q => {
-    const all = [q.correct, ...q.wrong];
-    const shuffled = shuffle(all);
-    return { ...q, choices: shuffled, answer: shuffled.indexOf(q.correct) };
-  }));
+function fmt(n) { return (n < 0 ? '-$' : '$') + Math.abs(n).toLocaleString(); }
+
+function show(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
 }
 
-let score = 0, answered = 0, total = 25, currentQ = null, board = [];
+let score = 0, answered = 0, total = 25, cur = null, board = [];
 
 function startGame() {
   score = 0; answered = 0;
-  board = buildQuestions();
-  document.getElementById('intro-screen').style.display = 'none';
+  board = RAW.map(cat => cat.map(q => {
+    const all = shuffle([q.correct, ...q.wrong]);
+    return { ...q, choices: all, answer: all.indexOf(q.correct), used: false };
+  }));
   document.getElementById('board-confirm').classList.remove('show');
   document.getElementById('q-confirm').classList.remove('show');
-  showBoard();
-}
-
-function showBoard() {
-  document.getElementById('board-screen').classList.add('active');
-  document.getElementById('question-screen').classList.remove('active');
-  document.getElementById('final-screen').classList.remove('active');
-  document.getElementById('board-confirm').classList.remove('show');
-  updateScore(); renderBoard();
-}
-
-function updateScore() {
-  const fmt = n => (n < 0 ? '-$' : '$') + Math.abs(n).toLocaleString();
-  ['score-display','q-score-display'].forEach(id => {
-    const el = document.getElementById(id);
-    if (!el) return;
-    el.textContent = fmt(score);
-    el.className = 'score-val' + (score < 0 ? ' score-neg' : '');
-  });
-  const rem = document.getElementById('remaining-display');
-  if (rem) { const l = total - answered; rem.textContent = l + ' clue' + (l !== 1 ? 's' : '') + ' left'; }
+  renderBoard();
+  show('board');
 }
 
 function renderBoard() {
-  const b = document.getElementById('board');
-  b.innerHTML = '';
-  categories.forEach(c => { const h = document.createElement('div'); h.className = 'cat-header'; h.textContent = c.short; b.appendChild(h); });
+  const g = document.getElementById('board-grid');
+  g.innerHTML = '';
+  CATS.forEach(c => {
+    const h = document.createElement('div');
+    h.className = 'cat-header'; h.textContent = c.short; g.appendChild(h);
+  });
   for (let ri = 0; ri < 5; ri++) {
-    categories.forEach((_, ci) => {
+    CATS.forEach((_, ci) => {
       const q = board[ci][ri];
-      const cell = document.createElement('div');
-      cell.className = 'cell' + (q.used ? ' used' : '');
-      cell.textContent = q.used ? '✓' : '$' + q.points;
-      if (!q.used) cell.onclick = () => openQ(ci, ri);
-      b.appendChild(cell);
+      const el = document.createElement('div');
+      el.className = 'cell' + (q.used ? ' used' : '');
+      el.textContent = q.used ? '✓' : '$' + q.points;
+      if (!q.used) el.onclick = () => openQ(ci, ri);
+      g.appendChild(el);
     });
   }
+  document.getElementById('score-display').textContent = fmt(score);
+  document.getElementById('score-display').className = 'score-val' + (score < 0 ? ' score-neg' : '');
+  const left = total - answered;
+  document.getElementById('remaining-display').textContent = left + ' clue' + (left !== 1 ? 's' : '') + ' left';
 }
 
 function openQ(ci, ri) {
-  currentQ = { ci, ri };
+  cur = { ci, ri };
   const q = board[ci][ri];
-  document.getElementById('board-screen').classList.remove('active');
-  document.getElementById('question-screen').classList.add('active');
-  document.getElementById('q-meta').textContent = categories[ci].name;
-  document.getElementById('q-cat-label').textContent = categories[ci].short;
-  document.getElementById('q-points').textContent = '$' + q.points;
+  document.getElementById('q-meta').textContent = CATS[ci].name;
+  document.getElementById('q-cat-label').textContent = CATS[ci].short;
+  document.getElementById('q-pts').textContent = '$' + q.points;
   document.getElementById('q-clue').textContent = q.clue;
   document.getElementById('feedback').className = 'feedback';
   document.getElementById('feedback-verdict').textContent = '';
@@ -255,47 +249,46 @@ function openQ(ci, ri) {
   document.getElementById('continue-btn').style.display = 'none';
   document.getElementById('q-reset-btn').style.display = 'none';
   document.getElementById('q-confirm').classList.remove('show');
+  document.getElementById('q-score-display').textContent = fmt(score);
+  document.getElementById('q-score-display').className = 'score-val' + (score < 0 ? ' score-neg' : '');
   document.getElementById('q-progress').textContent = (answered + 1) + ' of ' + total;
-  updateScore();
   const el = document.getElementById('choices');
   el.innerHTML = '';
-  q.choices.forEach((choice, i) => {
+  q.choices.forEach((ch, i) => {
     const btn = document.createElement('button');
-    btn.className = 'choice'; btn.textContent = choice;
+    btn.className = 'choice'; btn.textContent = ch;
     btn.onclick = () => pick(i);
     el.appendChild(btn);
   });
+  show('question');
 }
 
 function pick(chosen) {
-  const q = board[currentQ.ci][currentQ.ri];
-  document.querySelectorAll('.choice').forEach(b => b.disabled = true);
-  document.querySelectorAll('.choice')[q.answer].classList.add('correct');
-  const correct = chosen === q.answer;
-  if (!correct) { document.querySelectorAll('.choice')[chosen].classList.add('wrong'); score -= q.points; }
+  const q = board[cur.ci][cur.ri];
+  const btns = document.querySelectorAll('.choice');
+  btns.forEach(b => b.disabled = true);
+  btns[q.answer].classList.add('correct');
+  const ok = chosen === q.answer;
+  if (!ok) { btns[chosen].classList.add('wrong'); score -= q.points; }
   else { score += q.points; }
-  board[currentQ.ci][currentQ.ri].used = true;
+  board[cur.ci][cur.ri].used = true;
   answered++;
-  document.getElementById('feedback-verdict').textContent = correct ? q.correctVerdict : q.wrongVerdict;
+  document.getElementById('feedback-verdict').textContent = ok ? q.cv : q.wv;
   document.getElementById('feedback-detail').textContent = q.detail;
   document.getElementById('feedback').className = 'feedback show';
   document.getElementById('continue-btn').style.display = 'inline-block';
   document.getElementById('q-reset-btn').style.display = 'inline-block';
-  updateScore();
+  document.getElementById('q-score-display').textContent = fmt(score);
+  document.getElementById('q-score-display').className = 'score-val' + (score < 0 ? ' score-neg' : '');
 }
 
-function continueGame() { answered >= total ? showFinal() : showBoard(); }
-function askReset() { document.getElementById('board-confirm').classList.add('show'); }
-function cancelReset() { document.getElementById('board-confirm').classList.remove('show'); }
-function askResetQ() { document.getElementById('q-confirm').classList.add('show'); }
-function cancelResetQ() { document.getElementById('q-confirm').classList.remove('show'); }
+function continueGame() { answered >= total ? showFinal() : (renderBoard(), show('board')); }
+
+function askReset(ctx) { document.getElementById(ctx === 'board' ? 'board-confirm' : 'q-confirm').classList.add('show'); }
+function cancelReset(ctx) { document.getElementById(ctx === 'board' ? 'board-confirm' : 'q-confirm').classList.remove('show'); }
 
 function showFinal() {
-  document.getElementById('board-screen').classList.remove('active');
-  document.getElementById('question-screen').classList.remove('active');
-  document.getElementById('final-screen').classList.add('active');
-  const fmt = n => (n < 0 ? '-$' : '$') + Math.abs(n).toLocaleString();
-  document.getElementById('final-score-display').textContent = fmt(score);
+  document.getElementById('final-score').textContent = fmt(score);
   const msgs = [
     [9000, "You aced it. You are either a journalist, a regulator, or someone who has been personally wronged by a Fortune 500 company. Either way, we respect it."],
     [6000, "Strong showing. You clearly read the news with a specific kind of energy — the kind that makes you excellent at dinner parties and banned from company happy hours."],
@@ -304,6 +297,7 @@ function showFinal() {
     [-Infinity, "A negative score. Honestly, same energy as the EPA enforcement budget. You're in good company — just not the company we were profiling."]
   ];
   document.getElementById('final-msg').textContent = msgs.find(([t]) => score >= t)[1];
+  show('final');
 }
 </script>
 </body>
